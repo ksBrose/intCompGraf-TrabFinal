@@ -113,10 +113,10 @@ void PopMatrix(glm::mat4& M);
 
 // Declaração de várias funções utilizadas em main().  Essas estão definidas
 // logo após a definição de main() neste arquivo.
-/*Boneco add*/
+/**Boneco add**/
 void DrawCube(GLint render_as_black_uniform); // Desenha um cubo
 GLuint BuildTriangles(); // Constrói triângulos para renderização
-/*Boneco add*/
+/**Boneco add**/
 
 void BuildTrianglesAndAddToVirtualScene(ObjModel*); // Constrói representação de um ObjModel como malha de triângulos para renderização
 void ComputeNormals(ObjModel* model); // Computa normais de um ObjModel, caso não existam.
@@ -178,9 +178,9 @@ struct SceneObject
 // estes são acessados.
 std::map<std::string, SceneObject> g_VirtualScene;
 
-/*Boneco add*/
+/**Boneco add**/
 //std::map<const char*, SceneBoneco> g_VirtualBoneco;
-/*Boneco add*/
+/**Boneco add**/
 
 // Pilha que guardará as matrizes de modelagem.
 std::stack<glm::mat4>  g_MatrixStack;
@@ -207,6 +207,11 @@ float g_CameraTheta = 0.0f; // Ângulo no plano ZX em relação ao eixo Z
 float g_CameraPhi = 0.0f;   // Ângulo em relação ao eixo Y
 float g_CameraDistance = 3.5f; // Distância da câmera para a origem
 
+/**free camera add**/
+float g_Theta = -3.0 * 3.141592f /4 ;
+float g_Phi = 3.141592f /8 ;
+/**free camera add**/
+
 // Variáveis que controlam rotação do antebraço
 float g_ForearmAngleZ = 0.0f;
 float g_ForearmAngleX = 0.0f;
@@ -232,7 +237,18 @@ GLint g_bbox_max_uniform;
 
 // Número de texturas carregadas pela função LoadTextureImage()
 GLuint g_NumLoadedTextures = 0;
+/**camera add**/
+bool tecla_W_pressionada = false;
+bool tecla_A_pressionada = false;
+bool tecla_S_pressionada = false;
+bool tecla_D_pressionada = false;
+//float delta_t;
 
+
+        glm::vec4 camera_position_c  = glm::vec4(2.5f,2.5f,2.5f,1.0f); // Ponto "c", centro da câmera
+        glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
+        glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
+/**camera add**/
 int main(int argc, char* argv[])
 {
     // Inicializamos a biblioteca GLFW, utilizada para criar uma janela do
@@ -306,10 +322,10 @@ int main(int argc, char* argv[])
     //
     LoadShadersFromFiles();
 
-/*Boneco add*/
+/**Boneco add**/
     // Construímos a representação de um triângulo
     GLuint vertex_array_object_id = BuildTriangles();
-/*Boneco add*/
+/**Boneco add**/
 
     // Carregamos duas imagens para serem utilizadas como textura
     LoadTextureImage("../../data/wood_floor.jpg");      // TextureImage0
@@ -337,7 +353,7 @@ int main(int argc, char* argv[])
     // Inicializamos o código para renderização de texto.
     TextRendering_Init();
 
-/*Boneco add*/
+/**Boneco add**/
     // Buscamos o endereço das variáveis definidas dentro do Vertex Shader.
     // Utilizaremos estas variáveis para enviar dados para a placa de vídeo
     // (GPU)! Veja arquivo "shader_vertex.glsl".
@@ -345,7 +361,7 @@ int main(int argc, char* argv[])
     GLint view_uniform            = glGetUniformLocation(g_GpuProgramID, "view"); // Variável da matriz "view" em shader_vertex.glsl
     GLint projection_uniform      = glGetUniformLocation(g_GpuProgramID, "projection"); // Variável da matriz "projection" em shader_vertex.glsl
     GLint render_as_black_uniform = glGetUniformLocation(g_GpuProgramID, "render_as_black"); // Variável booleana em shader_vertex.glsl
-/*Boneco add*/
+/**Boneco add**/
 
     // Habilitamos o Z-buffer. Veja slides 104-116 do documento Aula_09_Projecoes.pdf.
     glEnable(GL_DEPTH_TEST);
@@ -354,6 +370,18 @@ int main(int argc, char* argv[])
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
+
+/**free camera add**/
+    // Variáveis auxiliares utilizadas para chamada à função
+    // TextRendering_ShowModelViewProjection(), armazenando matrizes 4x4.
+    glm::mat4 the_projection;
+    glm::mat4 the_model;
+    glm::mat4 the_view;
+
+    float speed = 1.5f; // Velocidade da câmera
+    float prev_time = (float)glfwGetTime();
+    float delta_t;
+/**free camera add**/
 
     // Ficamos em um loop infinito, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
@@ -376,13 +404,13 @@ int main(int argc, char* argv[])
         // os shaders de vértice e fragmentos).
         glUseProgram(g_GpuProgramID);
 
-/*Boneco add*/
+/**Boneco add**/
         // "Ligamos" o VAO. Informamos que queremos utilizar os atributos de
         // vértices apontados pelo VAO criado pela função BuildTriangles(). Veja
         // comentários detalhados dentro da definição de BuildTriangles().
         glBindVertexArray(vertex_array_object_id);
-/*Boneco add*/
-
+/**Boneco add**/
+/*
         // Computamos a posição da câmera utilizando coordenadas esféricas.  As
         // variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
         // controladas pelo mouse do usuário. Veja as funções CursorPosCallback()
@@ -391,13 +419,31 @@ int main(int argc, char* argv[])
         float y = r*sin(g_CameraPhi);
         float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
         float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
-
+*//**free camera add**/
+        //float r = g_CameraDistance;
+        float y = sin(g_Phi);
+        float z = cos(g_Phi)*cos(g_Theta);
+        float x = cos(g_Phi)*sin(g_Theta);
+         camera_view_vector  = glm::vec4(x,-y,z,0.0f);
+/**free camera add**/
+/*
         // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
         // Veja slides 195-227 e 229-234 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
         glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
         glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
         glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
         glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+*/
+/**free camera add**/
+        // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
+        // Veja slides 195-227 e 229-234 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
+        //glm::vec4 camera_position_c  = glm::vec4(1.0f,1.0f,1.0f,1.0f); // Ponto "c", centro da câmera
+        //glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
+       // glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
+        glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+        glm::vec4 w = -camera_view_vector;
+        glm::vec4 u = crossproduct(camera_up_vector,-camera_view_vector);
+/**free camera add**/
 
         // Computamos a matriz "View" utilizando os parâmetros da câmera para
         // definir o sistema de coordenadas da câmera.  Veja slides 2-14, 184-190 e 236-242 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
@@ -409,7 +455,7 @@ int main(int argc, char* argv[])
         // Note que, no sistema de coordenadas da câmera, os planos near e far
         // estão no sentido negativo! Veja slides 176-204 do documento Aula_09_Projecoes.pdf.
         float nearplane = -0.1f;  // Posição do "near plane"
-        float farplane  = -10.0f; // Posição do "far plane"
+        float farplane  = -100.0f; // Posição do "far plane"
 
         if (g_UsePerspectiveProjection)
         {
@@ -440,7 +486,7 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(g_view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
         glUniformMatrix4fv(g_projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
 
-/*Boneco add*/
+/**Boneco add**/
         // ##### TAREFAS DO LABORATÓRIO 3
 
         // Cada cópia do cubo possui uma matriz de modelagem independente,
@@ -706,7 +752,7 @@ int main(int argc, char* argv[])
         // "Desligamos" o VAO, evitando assim que operações posteriores venham a
         // alterar o mesmo. Isso evita bugs.
         glBindVertexArray(0);
-/*Boneco add*/
+/**Boneco add**/
 
 
 //        #define SPHERE 0
@@ -746,6 +792,26 @@ int main(int argc, char* argv[])
         // Imprimimos na tela informação sobre o número de quadros renderizados
         // por segundo (frames per second).
         TextRendering_ShowFramesPerSecond(window);
+
+/**free camera add**/
+        // Atualiza delta de tempo
+        float current_time = (float)glfwGetTime();
+        delta_t = current_time - prev_time;
+        prev_time = current_time;
+ // Realiza movimentação de objetos
+        if (tecla_D_pressionada)
+            // Movimenta câmera para direita
+            camera_position_c += u * speed * delta_t;
+        if (tecla_A_pressionada)
+            // Movimenta câmera para direita
+            camera_position_c += -u * speed * delta_t;
+        if (tecla_W_pressionada)
+            // Movimenta câmera para direita
+            camera_position_c += -w * speed * delta_t;
+        if (tecla_S_pressionada)
+            // Movimenta câmera para direita
+            camera_position_c += w * speed * delta_t;
+/**free camera add**/
 
         // O framebuffer onde OpenGL executa as operações de renderização não
         // é o mesmo que está sendo mostrado para o usuário, caso contrário
@@ -927,7 +993,7 @@ void PopMatrix(glm::mat4& M)
     }
 }
 
-/*Boneco add*/
+/**Boneco add**/
 // Função que desenha um cubo com arestas em preto, definido dentro da função BuildTriangles().
 void DrawCube(GLint render_as_black_uniform)
 {
@@ -1238,7 +1304,7 @@ GLuint BuildTriangles()
     // os triângulos definidos acima. Veja a chamada glDrawElements() em main().
     return vertex_array_object_id;
 }
-/*Boneco add*/
+/**Boneco add**/
 
 
 // Função que computa as normais de um ObjModel, caso elas não tenham sido
@@ -1693,9 +1759,14 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
         float dx = xpos - g_LastCursorPosX;
         float dy = ypos - g_LastCursorPosY;
 
-        // Atualizamos parâmetros da câmera com os deslocamentos
-        g_CameraTheta -= 0.01f*dx;
-        g_CameraPhi   += 0.01f*dy;
+/**free camera add**/
+    // Atualizamos parâmetros da câmera com os deslocamentos
+  //  g_CameraTheta -= 0.01f*dx;
+//    g_CameraPhi   += 0.01f*dy;
+
+    g_Theta -= 0.003f*dx;
+    g_Phi   += 0.003f*dy;
+/**free camera add**/
 
         // Em coordenadas esféricas, o ângulo phi deve ficar entre -pi/2 e +pi/2.
         float phimax = 3.141592f/2;
@@ -1732,12 +1803,12 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
     if (g_MiddleMouseButtonPressed)
     {
         // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
-        float dx = xpos - g_LastCursorPosX;
-        float dy = ypos - g_LastCursorPosY;
+        //float dx = xpos - g_LastCursorPosX;
+        //float dy = ypos - g_LastCursorPosY;
 
         // Atualizamos parâmetros da antebraço com os deslocamentos
-        g_TorsoPositionX += 0.01f*dx;
-        g_TorsoPositionY -= 0.01f*dy;
+        //g_TorsoPositionX += 0.01f*dx;
+        //g_TorsoPositionY -= 0.01f*dy;
 
         // Atualizamos as variáveis globais para armazenar a posição atual do
         // cursor como sendo a última posição conhecida do cursor.
@@ -1840,6 +1911,77 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         fprintf(stdout,"Shaders recarregados!\n");
         fflush(stdout);
     }
+/**free camera add**/
+       // Veja https://www.glfw.org/docs/3.3/input_guide.html#input_key
+    if (key == GLFW_KEY_D)
+    {
+        if (action == GLFW_PRESS)
+            // Usuário apertou a tecla D, então atualizamos o estado para pressionada
+            tecla_D_pressionada = true;
+
+        else if (action == GLFW_RELEASE)
+            // Usuário largou a tecla D, então atualizamos o estado para NÃO pressionada
+            tecla_D_pressionada = false;
+
+        else if (action == GLFW_REPEAT)
+            // Usuário está segurando a tecla D e o sistema operacional está
+            // disparando eventos de repetição. Neste caso, não precisamos
+            // atualizar o estado da tecla, pois antes de um evento REPEAT
+            // necessariamente deve ter ocorrido um evento PRESS.
+            ;
+    }
+    if (key == GLFW_KEY_A)
+    {
+        if (action == GLFW_PRESS)
+            // Usuário apertou a tecla A, então atualizamos o estado para pressionada
+            tecla_A_pressionada = true;
+
+        else if (action == GLFW_RELEASE)
+            // Usuário largou a tecla A, então atualizamos o estado para NÃO pressionada
+            tecla_A_pressionada = false;
+
+        else if (action == GLFW_REPEAT)
+            // Usuário está segurando a tecla A e o sistema operacional está
+            // disparando eventos de repetição. Neste caso, não precisamos
+            // atualizar o estado da tecla, pois antes de um evento REPEAT
+            // necessariamente deve ter ocorrido um evento PRESS.
+            ;
+    }
+    if (key == GLFW_KEY_W)
+    {
+        if (action == GLFW_PRESS)
+            // Usuário apertou a tecla W, então atualizamos o estado para pressionada
+            tecla_W_pressionada = true;
+
+        else if (action == GLFW_RELEASE)
+            // Usuário largou a tecla W, então atualizamos o estado para NÃO pressionada
+            tecla_W_pressionada = false;
+
+        else if (action == GLFW_REPEAT)
+            // Usuário está segurando a tecla W e o sistema operacional está
+            // disparando eventos de repetição. Neste caso, não precisamos
+            // atualizar o estado da tecla, pois antes de um evento REPEAT
+            // necessariamente deve ter ocorrido um evento PRESS.
+            ;
+    }
+    if (key == GLFW_KEY_S)
+    {
+        if (action == GLFW_PRESS)
+            // Usuário apertou a tecla S, então atualizamos o estado para pressionada
+            tecla_S_pressionada = true;
+
+        else if (action == GLFW_RELEASE)
+            // Usuário largou a tecla S, então atualizamos o estado para NÃO pressionada
+            tecla_S_pressionada = false;
+
+        else if (action == GLFW_REPEAT)
+            // Usuário está segurando a tecla S e o sistema operacional está
+            // disparando eventos de repetição. Neste caso, não precisamos
+            // atualizar o estado da tecla, pois antes de um evento REPEAT
+            // necessariamente deve ter ocorrido um evento PRESS.
+            ;
+    }
+/**free camera add**/
 }
 
 // Definimos o callback para impressão de erros da GLFW no terminal
