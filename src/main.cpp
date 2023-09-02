@@ -355,7 +355,7 @@ int main(int argc, char* argv[])
 
     // Carregamos duas imagens para serem utilizadas como textura
     LoadTextureImage("../../data/wood_floor.jpg");      // TextureImage0
-    LoadTextureImage("../../data/tc-earth_nightmap_citylights.gif"); // TextureImage1
+    LoadTextureImage("../../data/wood-wall-texture.jpg"); // TextureImage1
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
 /*    ObjModel spheremodel("../../data/sphere.obj");
@@ -864,6 +864,55 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, PLANE);
         DrawVirtualObject("the_plane");
+        
+/** Paredes e Teto Add **/
+        // Desenhamos o plano da parede de fundo
+        model = Matrix_Translate(0.0f, 1.5f, -5.0f)
+                * Matrix_Scale(5.0f, 2.5f, 1.0f)
+                * Matrix_Rotate_X(M_PI_2)
+                * Matrix_Rotate_Y(M_PI);
+        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, PLANE);
+        DrawVirtualObject("the_plane");
+
+        // Desenhamos o plano da parede da frente
+        model = Matrix_Translate(0.0f, 1.5f, 5.0f)
+                * Matrix_Scale(5.0f, 2.5f, 1.0f)
+                * Matrix_Rotate_X(M_PI_2)
+                * Matrix_Rotate_Y(M_PI_2)
+                * Matrix_Rotate_Z(M_PI);
+        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, PLANE);
+        DrawVirtualObject("the_plane");
+
+        // Desenhamos o plano da parede da direita
+        model = Matrix_Translate(5.0f, 1.5f, 0.0f)
+                * Matrix_Scale(1.0f, 2.5f, 5.0f)
+                * Matrix_Rotate_Z(M_PI_2);
+        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, PLANE);
+        DrawVirtualObject("the_plane");
+
+
+        // Desenhamos o plano da parede da esquerda
+        model = Matrix_Translate(-5.0f, 1.5f, 0.0f)
+                * Matrix_Scale(1.0f, 2.5f, 5.0f)
+                * Matrix_Rotate_X(M_PI_2)
+                * Matrix_Rotate_Z(3 * M_PI_2);
+        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, PLANE);
+        DrawVirtualObject("the_plane");
+
+        // Desenhamos o plano do teto
+        model = Matrix_Translate(0.0f, 4.0f, 0.0f)
+                * Matrix_Scale(5.0f,1.0f,5.0f)
+                * Matrix_Rotate_X(M_PI);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, PLANE);
+        DrawVirtualObject("the_plane");
+
+
+/** Paredes e Teto Add **/
 
 
         TextRendering_ShowBodyAngles(window,angulo);
