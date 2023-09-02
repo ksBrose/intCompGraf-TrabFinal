@@ -48,8 +48,6 @@
 #include "utils.h"
 #include "matrices.h"
 
-#include "moves.h"
-
 // Constantes
 #define M_PI   3.14159265358979323846
 #define M_PI_2 1.57079632679489661923
@@ -122,7 +120,6 @@ void PopMatrix(glm::mat4& M);
 /**Boneco add**/
 void DrawCube(GLint render_as_black_uniform); // Desenha um cubo
 GLuint BuildTriangles(); // Constrói triângulos para renderização
-GLuint BuildTrianglesNeg(); // Constrói triângulos para renderização
 /**Boneco add**/
 
 void BuildTrianglesAndAddToVirtualScene(ObjModel*); // Constrói representação de um ObjModel como malha de triângulos para renderização
@@ -154,7 +151,6 @@ void TextRendering_ShowModelViewProjection(GLFWwindow* window, glm::mat4 project
 void TextRendering_ShowEulerAngles(GLFWwindow* window);
 void TextRendering_ShowProjection(GLFWwindow* window);
 void TextRendering_ShowFramesPerSecond(GLFWwindow* window);
-void TextRendering_ShowBodyAngles(GLFWwindow* window,Teta angulo);
 
 // Funções callback para comunicação com o sistema operacional e interação do
 // usuário. Veja mais comentários nas definições das mesmas, abaixo.
@@ -257,19 +253,6 @@ bool tecla_D_pressionada = false;
         glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
         glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
 /**camera add**/
-
-/**Animação add**/
-// Animação baseada no tempo
-float dt = 0;
-float dt1 = 0;
-float dt0 = 0;
-float timer = 0;
-bool startmove = false;
-bool reset = false;
-float tetay =0;
-glm::vec3 bezier_cintura;
-/**Animação add**/
-
 int main(int argc, char* argv[])
 {
     // Inicializamos a biblioteca GLFW, utilizada para criar uma janela do
@@ -346,11 +329,6 @@ int main(int argc, char* argv[])
 /**Boneco add**/
     // Construímos a representação de um triângulo
     GLuint vertex_array_object_id = BuildTriangles();
-    // Construímos a representação de um triângulo
-    GLuint vertex_array_object_id_neg = BuildTrianglesNeg();
-
-    Teta angulo;
-    inicializa_angulos(&angulo, &bezier_cintura);
 /**Boneco add**/
 
     // Carregamos duas imagens para serem utilizadas como textura
@@ -429,18 +407,7 @@ int main(int argc, char* argv[])
         // Pedimos para a GPU utilizar o programa de GPU criado acima (contendo
         // os shaders de vértice e fragmentos).
         glUseProgram(g_GpuProgramID);
-/**Animação add**/
-        // Animação baseada no tempo
-        dt1 = glfwGetTime();
-        dt = dt1 - dt0;
-        if(reset)
-        {
-            inicializa_angulos(&angulo, &bezier_cintura);
-            reset=false;
-        }
-        if(startmove)
-        move_one(&angulo, dt, &timer, &bezier_cintura);
-/**Animação add**/
+
 /**Boneco add**/
         // "Ligamos" o VAO. Informamos que queremos utilizar os atributos de
         // vértices apontados pelo VAO criado pela função BuildTriangles(). Veja
@@ -540,7 +507,7 @@ int main(int argc, char* argv[])
  //       glm::mat4 model = Matrix_Identity(); // Transformação inicial = identidade.
 
         // Translação inicial do torso
-        model = model* Matrix_Scale(0.5f, 0.5f, 0.5f) * Matrix_Translate(g_TorsoPositionX - 0.0f, g_TorsoPositionY + 1.5f,g_TorsoPositionX- 2.0f);
+        model = model* Matrix_Scale(0.5f, 0.5f, 0.5f) * Matrix_Translate(g_TorsoPositionX - 0.0f, g_TorsoPositionY + 1.5f,g_TorsoPositionX+ 1.0f);
         // Guardamos matriz model atual na pilha
 /*        PushMatrix(model);
             // Atualizamos a matriz model (multiplicação à direita) para fazer um escalamento do torso
@@ -555,9 +522,9 @@ int main(int argc, char* argv[])
             // acima e já enviadas para a placa de vídeo (GPU).
             DrawCube(render_as_black_uniform); // #### TORSO
         PopMatrix(model);
- */     glBindVertexArray(vertex_array_object_id_neg);//muda ponto de referencia de construção de cubos
+ */
             PushMatrix(model);                                  // pilha = I
-                model = model * Matrix_Translate(bezier_cintura.x, bezier_cintura.y, bezier_cintura.z); // Posição do torço (pulos)
+                model = model * Matrix_Translate(0.0f, 0.0f, 0.0f); // Posição do torço (pulos)
                 PushMatrix(model);                              // pilha = I * Tcentro
                     model = model // rotação do torço para guia ficar na cintura (pocisionamento)
                         * Matrix_Rotate_Z(0)  // TERCEIRO rotação Z de Euler
@@ -566,8 +533,8 @@ int main(int argc, char* argv[])
                     PushMatrix(model);                          // pilha = I * Tc * Rposicao
                         model = model // rotação do torço para guia ficar na cintura (cumprimento)
                             * Matrix_Rotate_Z(0)  // TERCEIRO rotação Z de Euler
-                            * Matrix_Rotate_Y((angulo.centro.y)*M_PI/180)  // (+)ombro esquerdo para tras
-                            * Matrix_Rotate_X((angulo.centro.x)*M_PI/180); // rotação x (frontal) (+)inclina para frentre (-)inclina para traz
+                            * Matrix_Rotate_Y(0)  // SEGUNDO rotação Y de Euler
+                            * Matrix_Rotate_X(30*M_PI/180); // rotação x (frontal) (+)inclina para frentre (-)inclina para traz
                         PushMatrix(model);                      // pilha = I * Tc * Rp * Rinclinacao
                             model = model * Matrix_Scale(0.8f, 1.0f, 0.2f); //escalamento do tronco
                             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
@@ -586,9 +553,9 @@ int main(int argc, char* argv[])
                                       * Matrix_Rotate_X(0); // rotação olhar para vertrical (+)cima (-)baixo
                                 PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Tc * Rpescoco
                                     model = model //  rotação da cabeça (animação)
-                                        * Matrix_Rotate_Z(0*M_PI/180)  // TERCEIRO rotação Z de Euler
-                                        * Matrix_Rotate_Y(0)  // SEGUNDO rotação Y de Euler
-                                        * Matrix_Rotate_X(0*g_AngleX); // PRIMEIRO rotação X de Euler
+                                        * Matrix_Rotate_Z(g_AngleZ)  // TERCEIRO rotação Z de Euler
+                                        * Matrix_Rotate_Y(g_AngleY)  // SEGUNDO rotação Y de Euler
+                                        * Matrix_Rotate_X(g_AngleX); // PRIMEIRO rotação X de Euler
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tc * Rp * Rcanimacao
                                         model = model * Matrix_Scale(0.4f, 0.4f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da cabeça
                                         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
@@ -598,20 +565,20 @@ int main(int argc, char* argv[])
                             PopMatrix(model);                   // pilha = I * Tc * Rp * Ri * Tc
                         // Tiramos da pilha a matriz model guardada anteriormente
                         PopMatrix(model);                       // pilha = I * Tc * Rp * Ri
-                        glBindVertexArray(vertex_array_object_id); //muda ponto de referencia de construção de cubos
+
                 /*R_arm*/PushMatrix(model);                     // pilha = I * Tc * Rp * Ri
-                            model = model * Matrix_Translate(-0.55f, 1.0f, 0.0f); // translação do braço direito
+                            model = model * Matrix_Translate(0.55f, 1.0f, 0.0f); // translação do braço direito
                             PushMatrix(model);                  // pilha = I * Tc * Rp * Ri * Trightarm
                                 model = model // rotação braço (posicionamento)
                                       * Matrix_Rotate_Z(0);  // gira 90 graus baixos na linha do corpo
                                       //* Matrix_Rotate_Y(g_AngleY)  // SEGUNDO rotação Y de Euler
                                       //* Matrix_Rotate_X(g_AngleX); // PRIMEIRO rotação X de Euler
-                                PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Tra * Rrightarmposição
-                    /*ombro*/   model = model // rotação do braço direito (animação)
-                                      * Matrix_Rotate_Y((angulo.ombrod.y)*M_PI/180)  // (-)supinaçao(palma cima) (+)pronação (palma chao)
-                                      * Matrix_Rotate_Z((-angulo.ombrod.z)*M_PI/180)  // (-)afasta cotovelo do corpo
 
-                                      * Matrix_Rotate_X((-angulo.ombrod.x)*M_PI/180); // (+) cotovelo para traz (-) cotovelo para frente
+                                PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Tra * Rrightarmposição
+                                model = model // rotação do braço direito (animação)
+                                      * Matrix_Rotate_Z(0)  // (-)afasta cotovelo do corpo
+                                      * Matrix_Rotate_Y(0)  // (-)supinaçao (+)pronação
+                                      * Matrix_Rotate_X(0); // (+) cotovelo para traz (-) cotovelo para frente
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rrightarmanimacao
                                         model = model * Matrix_Scale(0.2f, 0.6f, 0.2f); // escalamento do braço direito
                                         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
@@ -619,24 +586,23 @@ int main(int argc, char* argv[])
                                     PopMatrix(model);           // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa
                                         model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); // translação do antebraço direito
-                    /*rot cotovelo*/    model = model // rotação do ante braço direito (animação)
-                                            //* Matrix_Rotate_Y((-angulo.cotovd.y)*M_PI/180)  // SEGUNDO rotação Z de Euler
-                                            * Matrix_Rotate_Z((angulo.cotovd.z)*M_PI/180)
-                                            * Matrix_Rotate_X((angulo.cotovd.x)*M_PI/180)* Matrix_Rotate_Y((-angulo.cotovd.y)*M_PI/180); // (-) fexao cotovelo até ( 0 ) esticado
+                                        model = model // rotação do ante braço direito (animação)
+                                            * Matrix_Rotate_Z(g_ForearmAngleZ)  // SEGUNDO rotação Z de Euler
+                                            * Matrix_Rotate_X(g_ForearmAngleX); // PRIMEIRO rotação X de Euler
                                         PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rantebracodiranimacao
-                                            model = model * Matrix_Scale(0.17f, 0.55f, 0.2f); // escalamento do antebraço direito
+                                            model = model * Matrix_Scale(0.2f, 0.6f, 0.2f); // escalamento do antebraço direito
                                             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                            DrawCube(render_as_black_uniform); // #### ANTEBRAÇO DIREITO // Desenhamos o antebraço direito
+                           //                 DrawCube(render_as_black_uniform); // #### ANTEBRAÇO DIREITO // Desenhamos o antebraço direito
                                         PopMatrix(model);       // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rabda
                                 /*Mão*/ PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rabda
-                                            model = model * Matrix_Translate(0.0f, -0.6f, 0.0f); // translação da mao direita
+                                            model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); // translação da mao direita
                                             //model = model // Atualizamos matriz model (multiplicação à direita) com a rotação da mao direita
                                                 // * Matrix_Rotate_Z(g_ForearmAngleZ)  // SEGUNDO rotação Z de Euler
                                                 // * Matrix_Rotate_X(g_ForearmAngleX); // PRIMEIRO rotação X de Euler
                                             PushMatrix(model);  // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rabda * Tmaodireita
-                                                model = model * Matrix_Scale(0.12f, 0.2f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da mao direita
+                                                model = model * Matrix_Scale(0.2f, 0.1f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da mao direita
                                                 glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                                DrawCube(render_as_black_uniform); // #### MAO DIREITA // Desenhamos o mao direita
+                            //                    DrawCube(render_as_black_uniform); // #### MAO DIREITA // Desenhamos o mao direita
                                             PopMatrix(model);   // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rabda * Tmd
                                         PopMatrix(model);       // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rabda
                                     PopMatrix(model);           // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa
@@ -645,20 +611,19 @@ int main(int argc, char* argv[])
                         PopMatrix(model);                       // pilha = I * Tc * Rp * Ri
 
                         // Neste ponto a matriz model recuperada é a matriz inicial (translação do torso)
-                /*L_arm*/
+                /*Braço esquerdo*/
                         PushMatrix(model);                      // pilha = I * Tc * Rp * Ri
-                            model = model * Matrix_Translate(0.55f, 1.0f, 0.0f); // translação para o braço esuerdo
+                            model = model * Matrix_Translate(-0.55f, 1.0f, 0.0f); // translação para o braço esuerdo
                             PushMatrix(model);                  // pilha = I * Tc * Rp * Ri * Tleftarm
                                 model = model // rotação braço (posicionamento)
                                 * Matrix_Rotate_Z(0);  // gira 180 graus baixos na linha do corpo
                                 //* Matrix_Rotate_Y(g_AngleY)  // SEGUNDO rotação Y de Euler
                                 //* Matrix_Rotate_X(g_AngleX); // PRIMEIRO rotação X de Euler
                                 PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Tla * Rleftarmposição
-                    /*ombro*/   model = model // rotação do braço esquedro (animação)
-                                      * Matrix_Rotate_Y((-angulo.ombroe.y)*M_PI/180)  // (+)supinaçao (-)pronação
-                                      * Matrix_Rotate_Z((angulo.ombroe.z)*M_PI/180) // (+)afasta cotovelo do corpo
-
-                                      * Matrix_Rotate_X((-angulo.ombroe.x)*M_PI/180); // (+) cotovelo para traz (-) cotovelo para frente
+                                model = model // rotação do braço esquedro (animação)
+                                      * Matrix_Rotate_Z(0) // (+)afasta cotovelo do corpo
+                                      * Matrix_Rotate_Y(0)  // (+)supinaçao (-)pronação
+                                      * Matrix_Rotate_X(0); // (+) cotovelo para traz (-) cotovelo para frente
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rleftarmanimacao
                                         model = model * Matrix_Scale(0.2f, 0.6f, 0.2f); // escalamento do braço esquerdo
                                         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
@@ -666,22 +631,21 @@ int main(int argc, char* argv[])
                                     PopMatrix(model);           // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa
                                         model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); // translação do antebraço esquerdo
-                    /*rot cotovelo*/    model = model // rotação do antebraço esquerdo (animação)
-                                            //* Matrix_Rotate_Y((angulo.cotove.y)*M_PI/180)  // SEGUNDO rotação Z de Euler
-                                            * Matrix_Rotate_Z((angulo.cotove.z)*M_PI/180)
-                                            * Matrix_Rotate_X((angulo.cotove.x)*M_PI/180)* Matrix_Rotate_Y((angulo.cotove.y)*M_PI/180); // (-) fexao cotovelo até ( 0 ) esticado
+                                        model = model // rotação do antebraço esquerdo (animação)
+                                            * Matrix_Rotate_Z(-g_ForearmAngleZ)  // SEGUNDO rotação Z de Euler
+                                            * Matrix_Rotate_X(g_ForearmAngleX); // PRIMEIRO rotação X de Euler
                                         PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa * (Tabe)Rantebracoesqanimacao
-                                            model = model * Matrix_Scale(0.17f, 0.55f, 0.2f); // escalamento do antebraço esquerdo
+                                            model = model * Matrix_Scale(0.2f, 0.6f, 0.2f); // escalamento do antebraço esquerdo
                                             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
                                             DrawCube(render_as_black_uniform); // #### ANTEBRAÇO ESQUERDO // Desenhamos o antebraço esquerdo
                                         PopMatrix(model);       // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa * (Tabe)Rabea
                                 /*Mão*/ PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa * (Tabe)Rabea
-                                            model = model * Matrix_Translate(0.0f, -0.6f, 0.0f); // translação da mao esquerda
+                                            model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); // translação da mao esquerda
                                             //model = model // Atualizamos matriz model (multiplicação à direita) com a rotação da mao esquerda
                                             // * Matrix_Rotate_Z(g_ForearmAngleZ)  // SEGUNDO rotação Z de Euler
                                             // * Matrix_Rotate_X(g_ForearmAngleX); // PRIMEIRO rotação X de Euler
                                             PushMatrix(model);  // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa * (Tabe)Rabea * Tmaoesquerda
-                                                model = model * Matrix_Scale(0.12f, 0.2f, 0.2f); // escalamento da mao esquerda
+                                                model = model * Matrix_Scale(0.2f, 0.1f, 0.2f); // escalamento da mao esquerda
                                                 glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
                                                 DrawCube(render_as_black_uniform); // #### MAO ESQUERDA // Desenhamos a mao esquerda
                                             PopMatrix(model);   // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa * (Tabe)Rabea * Tme
@@ -694,7 +658,7 @@ int main(int argc, char* argv[])
                         // Neste ponto a matriz model recuperada é a matriz inicial (translação do torso)
                 /*Perna direita*/
                         PushMatrix(model);                      // pilha = I * Tc * Rp * Ri
-                            model = model * Matrix_Translate(-0.2f, -0.05f, 0.0f); // translação para a perna direita
+                            model = model * Matrix_Translate(0.2f, -0.05f, 0.0f); // translação para a perna direita
                             PushMatrix(model);                  // pilha = I * Tc * Rp * Ri * Trightleg
                                 model = model // rotação da perna direita
                                 * Matrix_Rotate_Z(0);  // gira 180 graus
@@ -702,9 +666,9 @@ int main(int argc, char* argv[])
                                 //* Matrix_Rotate_X(g_AngleX); // PRIMEIRO rotação X de Euler
                                 PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Trl * Rrightlegposição
                                     model = model // rotação da perna direita
-                                        * Matrix_Rotate_Z((-angulo.quadrild.z)*M_PI/180)  // (-)afasta joelho do centro
-                                        * Matrix_Rotate_Y((-angulo.quadrild.y)*M_PI/180)  // (-)rot externa (+)rot interna
-                                        * Matrix_Rotate_X((-angulo.quadrild.x)*M_PI/180); // (+) joelho para traz (-) joelho para frente
+                                        * Matrix_Rotate_Z(0)  // (-)afasta joelho do centro
+                                        * Matrix_Rotate_Y(0)  // (-)rot externa (+)rot interna
+                                        * Matrix_Rotate_X(-30*M_PI/180); // (+) joelho para traz (-) joelho para frente
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrightleganimacao
                                         model = model * Matrix_Scale(0.3f, 0.6f, 0.2f); // escalamento da perna direita
                                         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
@@ -712,9 +676,9 @@ int main(int argc, char* argv[])
                                     PopMatrix(model);           // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla
                                         model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); //translação para a perna direita
-                    /*rot joelho*/      model = model // rotação do perna direita (animação)
-                                            * Matrix_Rotate_Z(0)  // SEGUNDO rotação Z de Euler
-                                            * Matrix_Rotate_X((-angulo.joelhod.x)*M_PI/180); // (+) fexao joelho até ( 0 ) esticado
+                                        //model = model // Atualizamos matriz model (multiplicação à direita) com a rotação da perna direita
+                                            //* Matrix_Rotate_Z(-g_ForearmAngleZ)  // SEGUNDO rotação Z de Euler
+                                            //* Matrix_Rotate_X(g_ForearmAngleX); // PRIMEIRO rotação X de Euler
                                         PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla * Trl2
                                             model = model * Matrix_Scale(0.25f, 0.6f, 0.2f); // escalamento da perna direita
                                             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
@@ -723,10 +687,9 @@ int main(int argc, char* argv[])
                                 /*pé*/  PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla * Trl2
                                             model = model * Matrix_Translate(0.0f, -0.65f, 0.125f); // translação do pe direito
                                             model = model // rotação do pe direito
-                                                    * Matrix_Rotate_Y((-angulo.ped.y)*M_PI/180)  // (-)rot externa (+)rot interna
-                                                    * Matrix_Rotate_Z((angulo.ped.z)*M_PI/180)  // (-)eversão do pé (+) inversão do pé(Yoko)
-
-                                                    * Matrix_Rotate_X((angulo.ped.x)*M_PI/180); // (+) flexao planar(peito do pé) (-) dorsoflexão (0)= pe 90 graus
+                                                    * Matrix_Rotate_Z(0)  // (-)eversão do pé (+) inversão do pé(Yoko)
+                                                    * Matrix_Rotate_Y(0)  // (-)rot externa (+)rot interna
+                                                    * Matrix_Rotate_X(0); // (+) flexao planar(peito do pé) (-) dorsoflexão (0)= pe 90 graus
                                             PushMatrix(model);  // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla * Trl2 * (Tpedireito)Rpedireitoanimação
                                                 model = model * Matrix_Scale(0.2f, 0.1f, 0.5f); // escalamento do pe direito
                                                 glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
@@ -741,7 +704,7 @@ int main(int argc, char* argv[])
                         // Neste ponto a matriz model recuperada é a matriz inicial (translação do torso)
                 /*Perna esquerda*/
                         PushMatrix(model);                      // pilha = I * Tc * Rp * Ri
-                            model = model * Matrix_Translate(0.2f, -0.05f, 0.0f); // translação para a perna esquerda
+                            model = model * Matrix_Translate(-0.2f, -0.05f, 0.0f); // translação para a perna esquerda
                             PushMatrix(model);                  // pilha = I * Tc * Rp * Ri * Tleftleg
                                 model = model // rotação da perna esquerda
                                     * Matrix_Rotate_Z(0);  // gira 180 graus
@@ -749,9 +712,9 @@ int main(int argc, char* argv[])
                                     //* Matrix_Rotate_X(3.1415); // PRIMEIRO rotação X de Euler
                                 PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Tll * Rleftlegposição
                                     model = model  // rotação da perna esquerda
-                                        * Matrix_Rotate_Z((angulo.quadrile.z)*M_PI/180)  // (+)afasta joelho do centro
-                                        * Matrix_Rotate_Y((angulo.quadrile.y)*M_PI/180)  // (-)rot interna (+)rot externa
-                                        * Matrix_Rotate_X((-angulo.quadrile.x)*M_PI/180); // (+) joelho para traz (-) joelho para frente
+                                        * Matrix_Rotate_Z(0)  // (+)afasta joelho do centro
+                                        * Matrix_Rotate_Y(0)  // (-)rot interna (+)rot externa
+                                        * Matrix_Rotate_X(-30*M_PI/180); // (+) joelho para traz (-) joelho para frente
                                     PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rleftleganimacao
                                         model = model * Matrix_Scale(0.3f, 0.6f, 0.2f); // escalamento da perna esquerda
                                         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
@@ -759,9 +722,9 @@ int main(int argc, char* argv[])
                                     PopMatrix(model);               // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla
                                     PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla
                                         model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); //translação para a perna esquerda
-                    /*rot joelho*/      model = model // rotação do perna esquerda (animação)
-                                            * Matrix_Rotate_Z(0)  // SEGUNDO rotação Z de Euler
-                                            * Matrix_Rotate_X((-angulo.joelhoe.x)*M_PI/180); // (+) fexao joelho até ( 0 ) esticado
+                                        //model = model // Atualizamos matriz model (multiplicação à direita) com a rotação do perna esquerda
+                                            //* Matrix_Rotate_Z(-g_ForearmAngleZ)  // SEGUNDO rotação Z de Euler
+                                            //* Matrix_Rotate_X(g_ForearmAngleX); // PRIMEIRO rotação X de Euler
                                         PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla * Tll2
                                             model = model * Matrix_Scale(0.25f, 0.6f, 0.2f); // escalamento da perna esqurda
                                             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
@@ -770,10 +733,9 @@ int main(int argc, char* argv[])
                                 /*pé*/  PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla * Tll2
                                             model = model * Matrix_Translate(0.0f, -0.65f, 0.125f); // translação do pe esquerdo
                                             model = model // rotação do pe esquerdo
-                                                    * Matrix_Rotate_Y((angulo.pee.y)*M_PI/180)  // (-)rot interna (+)rot externa
-                                                    * Matrix_Rotate_Z((-angulo.pee.z)*M_PI/180)  // (-)inversão do pé(Yoko) (+) eversão do pé
-
-                                                    * Matrix_Rotate_X((angulo.pee.x)*M_PI/180); // (+) flexao planar(peito do pé) (-) dorsoflexão (0)= pe 90 graus
+                                                    * Matrix_Rotate_Z(0)  // (-)inversão do pé(Yoko) (+) eversão do pé
+                                                    * Matrix_Rotate_Y(0)  // (-)rot interna (+)rot externa
+                                                    * Matrix_Rotate_X(0); // (+) flexao planar(peito do pé) (-) dorsoflexão (0)= pe 90 graus
                                             PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla * Tll2 * (Tpeesquerdo)Rpeesquerdoanimação
                                                 model = model * Matrix_Scale(0.2f, 0.1f, 0.5f); // escalamento do pe esquerdo
                                                 glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
@@ -789,16 +751,15 @@ int main(int argc, char* argv[])
             PopMatrix(model);                           // pilha = I
         // Neste ponto a matriz model recuperada é a matriz inicial (entre os pés)
         PopMatrix(model); //origem
-        /*//desenha cubo de teste
         model = model * Matrix_Translate(0.0f, 0.0f, 0.0f); // Posição
         model = model // rotação
             * Matrix_Rotate_Z(0)  // TERCEIRO rotação Z de Euler
             * Matrix_Rotate_Y(0)  // SEGUNDO rotação Y de Euler
             * Matrix_Rotate_X(0); // PRIMEIRO rotação X de Eule
-        model = model * Matrix_Scale(1.0f, 1.0f, 1.0f); //escalamento
+        model = model * Matrix_Scale(0.2f, 0.2f, 0.2f); //escalamento
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
         DrawCube(render_as_black_uniform); // #### CUBO // Desenhamos o cubo
-        */
+
 
 
         // Agora queremos desenhar os eixos XYZ de coordenadas GLOBAIS.
@@ -833,8 +794,6 @@ int main(int argc, char* argv[])
         // "Desligamos" o VAO, evitando assim que operações posteriores venham a
         // alterar o mesmo. Isso evita bugs.
         glBindVertexArray(0);
-
-
 /**Boneco add**/
 
 
@@ -865,8 +824,6 @@ int main(int argc, char* argv[])
         glUniform1i(g_object_id_uniform, PLANE);
         DrawVirtualObject("the_plane");
 
-
-        TextRendering_ShowBodyAngles(window,angulo);
         // Imprimimos na tela os ângulos de Euler que controlam a rotação do
         // terceiro cubo.
         TextRendering_ShowEulerAngles(window);
@@ -911,10 +868,8 @@ int main(int argc, char* argv[])
         // definidas anteriormente usando glfwSet*Callback() serão chamadas
         // pela biblioteca GLFW.
         glfwPollEvents();
-/**animação add**/
-        // Atualiza o dt0
-        dt0 = dt1;
-/**animação add**/
+
+
     } //fim while
 
     // Finalizamos o uso dos recursos do sistema operacional
@@ -1162,260 +1117,12 @@ GLuint BuildTriangles()
     // Vértices de um cubo
     //    X      Y     Z     W
         -0.5f,  0.0f,  0.5f, 1.0f, // posição do vértice 0
-        -0.5f, -1.0f,  0.5f, 1.0f, // posição do vértice 1
-         0.5f, -1.0f,  0.5f, 1.0f, // posição do vértice 2
+        -0.5f,  1.0f,  0.5f, 1.0f, // posição do vértice 1 //passando y para positivo tive que mudar a ordem do GL_TRIANGLES
+         0.5f,  1.0f,  0.5f, 1.0f, // posição do vértice 2
          0.5f,  0.0f,  0.5f, 1.0f, // posição do vértice 3
         -0.5f,  0.0f, -0.5f, 1.0f, // posição do vértice 4
-        -0.5f, -1.0f, -0.5f, 1.0f, // posição do vértice 5
-         0.5f, -1.0f, -0.5f, 1.0f, // posição do vértice 6
-         0.5f,  0.0f, -0.5f, 1.0f, // posição do vértice 7
-    // Vértices para desenhar o eixo X
-    //    X      Y     Z     W
-         0.0f,  0.0f,  0.0f, 1.0f, // posição do vértice 8
-         1.0f,  0.0f,  0.0f, 1.0f, // posição do vértice 9
-    // Vértices para desenhar o eixo Y
-    //    X      Y     Z     W
-         0.0f,  0.0f,  0.0f, 1.0f, // posição do vértice 10
-         0.0f,  1.0f,  0.0f, 1.0f, // posição do vértice 11
-    // Vértices para desenhar o eixo Z
-    //    X      Y     Z     W
-         0.0f,  0.0f,  0.0f, 1.0f, // posição do vértice 12
-         0.0f,  0.0f,  1.0f, 1.0f, // posição do vértice 13
-    };
-
-    // Criamos o identificador (ID) de um Vertex Buffer Object (VBO).  Um VBO é
-    // um buffer de memória que irá conter os valores de um certo atributo de
-    // um conjunto de vértices; por exemplo: posição, cor, normais, coordenadas
-    // de textura.  Neste exemplo utilizaremos vários VBOs, um para cada tipo de atributo.
-    // Agora criamos um VBO para armazenarmos um atributo: posição.
-    GLuint VBO_model_coefficients_id;
-    glGenBuffers(1, &VBO_model_coefficients_id);
-
-    // Criamos o identificador (ID) de um Vertex Array Object (VAO).  Um VAO
-    // contém a definição de vários atributos de um certo conjunto de vértices;
-    // isto é, um VAO irá conter ponteiros para vários VBOs.
-    GLuint vertex_array_object_id;
-    glGenVertexArrays(1, &vertex_array_object_id);
-
-    // "Ligamos" o VAO ("bind"). Informamos que iremos atualizar o VAO cujo ID
-    // está contido na variável "vertex_array_object_id".
-    glBindVertexArray(vertex_array_object_id);
-
-    // "Ligamos" o VBO ("bind"). Informamos que o VBO cujo ID está contido na
-    // variável VBO_model_coefficients_id será modificado a seguir. A
-    // constante "GL_ARRAY_BUFFER" informa que esse buffer é de fato um VBO, e
-    // irá conter atributos de vértices.
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_model_coefficients_id);
-
-    // Alocamos memória para o VBO "ligado" acima. Como queremos armazenar
-    // nesse VBO todos os valores contidos no array "model_coefficients", pedimos
-    // para alocar um número de bytes exatamente igual ao tamanho ("size")
-    // desse array. A constante "GL_STATIC_DRAW" dá uma dica para o driver da
-    // GPU sobre como utilizaremos os dados do VBO. Neste caso, estamos dizendo
-    // que não pretendemos alterar tais dados (são estáticos: "STATIC"), e
-    // também dizemos que tais dados serão utilizados para renderizar ou
-    // desenhar ("DRAW").  Pense que:
-    //
-    //            glBufferData()  ==  malloc() do C  ==  new do C++.
-    //
-    glBufferData(GL_ARRAY_BUFFER, sizeof(model_coefficients), NULL, GL_STATIC_DRAW);
-
-    // Finalmente, copiamos os valores do array model_coefficients para dentro do
-    // VBO "ligado" acima.  Pense que:
-    //
-    //            glBufferSubData()  ==  memcpy() do C.
-    //
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(model_coefficients), model_coefficients);
-
-    // Precisamos então informar um índice de "local" ("location"), o qual será
-    // utilizado no shader "shader_vertex.glsl" para acessar os valores
-    // armazenados no VBO "ligado" acima. Também, informamos a dimensão (número de
-    // coeficientes) destes atributos. Como em nosso caso são pontos em coordenadas
-    // homogêneas, temos quatro coeficientes por vértice (X,Y,Z,W). Isso define
-    // um tipo de dado chamado de "vec4" em "shader_vertex.glsl": um vetor com
-    // quatro coeficientes. Finalmente, informamos que os dados estão em ponto
-    // flutuante com 32 bits (GL_FLOAT).
-    // Esta função também informa que o VBO "ligado" acima em glBindBuffer()
-    // está dentro do VAO "ligado" acima por glBindVertexArray().
-    // Veja https://www.khronos.org/opengl/wiki/Vertex_Specification#Vertex_Buffer_Object
-    GLuint location = 0; // "(location = 0)" em "shader_vertex.glsl"
-    GLint  number_of_dimensions = 4; // vec4 em "shader_vertex.glsl"
-    glVertexAttribPointer(location, number_of_dimensions, GL_FLOAT, GL_FALSE, 0, 0);
-
-    // "Ativamos" os atributos. Informamos que os atributos com índice de local
-    // definido acima, na variável "location", deve ser utilizado durante o
-    // rendering.
-    glEnableVertexAttribArray(location);
-
-    // "Desligamos" o VBO, evitando assim que operações posteriores venham a
-    // alterar o mesmo. Isso evita bugs.
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // Agora repetimos todos os passos acima para atribuir um novo atributo a
-    // cada vértice: uma cor (veja slides 109-112 do documento Aula_03_Rendering_Pipeline_Grafico.pdf e slide 111 do documento Aula_04_Modelagem_Geometrica_3D.pdf).
-    // Tal cor é definida como coeficientes RGBA: Red, Green, Blue, Alpha;
-    // isto é: Vermelho, Verde, Azul, Alpha (valor de transparência).
-    // Conversaremos sobre sistemas de cores nas aulas de Modelos de Iluminação.
-    GLfloat color_coefficients[] = {
-    // Cores dos vértices do cubo
-    //  R     G     B     A
-        1.0f, 0.5f, 0.0f, 1.0f, // cor do vértice 0
-        1.0f, 0.5f, 0.0f, 1.0f, // cor do vértice 1
-        0.0f, 0.5f, 1.0f, 1.0f, // cor do vértice 2
-        0.0f, 0.5f, 1.0f, 1.0f, // cor do vértice 3
-        1.0f, 0.5f, 0.0f, 1.0f, // cor do vértice 4
-        1.0f, 0.5f, 0.0f, 1.0f, // cor do vértice 5
-        0.0f, 0.5f, 1.0f, 1.0f, // cor do vértice 6
-        0.0f, 0.5f, 1.0f, 1.0f, // cor do vértice 7
-    // Cores para desenhar o eixo X
-        1.0f, 0.0f, 0.0f, 1.0f, // cor do vértice 8
-        1.0f, 0.0f, 0.0f, 1.0f, // cor do vértice 9
-    // Cores para desenhar o eixo Y
-        0.0f, 1.0f, 0.0f, 1.0f, // cor do vértice 10
-        0.0f, 1.0f, 0.0f, 1.0f, // cor do vértice 11
-    // Cores para desenhar o eixo Z
-        0.0f, 0.0f, 1.0f, 1.0f, // cor do vértice 12
-        0.0f, 0.0f, 1.0f, 1.0f, // cor do vértice 13
-    };
-    GLuint VBO_color_coefficients_id;
-    glGenBuffers(1, &VBO_color_coefficients_id);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_color_coefficients_id);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(color_coefficients), NULL, GL_STATIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(color_coefficients), color_coefficients);
-    location = 1; // "(location = 1)" em "shader_vertex.glsl"
-    number_of_dimensions = 4; // vec4 em "shader_vertex.glsl"
-    glVertexAttribPointer(location, number_of_dimensions, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(location);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // Vamos então definir polígonos utilizando os vértices do array
-    // model_coefficients.
-    //
-    // Para referência sobre os modos de renderização, veja slides 182-188 do documento Aula_04_Modelagem_Geometrica_3D.pdf.
-    //
-    // Este vetor "indices" define a TOPOLOGIA (veja slides 103-110 do documento Aula_04_Modelagem_Geometrica_3D.pdf).
-    //
-    GLuint indices[] = {
-    // Definimos os índices dos vértices que definem as FACES de um cubo
-    // através de 12 triângulos que serão desenhados com o modo de renderização
-    // GL_TRIANGLES.
-        0, 1, 2, // triângulo 1
-        7, 6, 5, // triângulo 2
-        3, 2, 6, // triângulo 3
-        4, 0, 3, // triângulo 4
-        4, 5, 1, // triângulo 5
-        1, 5, 6, // triângulo 6
-        0, 2, 3, // triângulo 7
-        7, 5, 4, // triângulo 8
-        3, 6, 7, // triângulo 9
-        4, 3, 7, // triângulo 10
-        4, 1, 0, // triângulo 11
-        1, 6, 2, // triângulo 12
-    // Definimos os índices dos vértices que definem as ARESTAS de um cubo
-    // através de 12 linhas que serão desenhadas com o modo de renderização
-    // GL_LINES.
-        0, 1, // linha 1
-        1, 2, // linha 2
-        2, 3, // linha 3
-        3, 0, // linha 4
-        0, 4, // linha 5
-        4, 7, // linha 6
-        7, 6, // linha 7
-        6, 2, // linha 8
-        6, 5, // linha 9
-        5, 4, // linha 10
-        5, 1, // linha 11
-        7, 3, // linha 12
-    // Definimos os índices dos vértices que definem as linhas dos eixos X, Y,
-    // Z, que serão desenhados com o modo GL_LINES.
-        8 , 9 , // linha 1
-        10, 11, // linha 2
-        12, 13  // linha 3
-    };
-
-    // Criamos um primeiro objeto virtual (SceneObject) que se refere às faces
-    // coloridas do cubo.
-    SceneObject cube_faces;
-    cube_faces.name           = "Cubo (faces coloridas)";
-    cube_faces.first_index    = 0; // Primeiro índice está em indices[0]
-    cube_faces.num_indices    = 36;       // Último índice está em indices[35]; total de 36 índices.
-    cube_faces.rendering_mode = GL_TRIANGLES; // Índices correspondem ao tipo de rasterização GL_TRIANGLES.
-
-    // Adicionamos o objeto criado acima na nossa cena virtual (g_VirtualScene).
-    g_VirtualScene["cube_faces"] = cube_faces;
-
-    // Criamos um segundo objeto virtual (SceneObject) que se refere às arestas
-    // pretas do cubo.
-    SceneObject cube_edges;
-    cube_edges.name           = "Cubo (arestas pretas)";
-    cube_edges.first_index    = (36*sizeof(GLuint)); // Primeiro índice está em indices[36]
-    cube_edges.num_indices    = 24; // Último índice está em indices[59]; total de 24 índices.
-    cube_edges.rendering_mode = GL_LINES; // Índices correspondem ao tipo de rasterização GL_LINES.
-
-    // Adicionamos o objeto criado acima na nossa cena virtual (g_VirtualScene).
-    g_VirtualScene["cube_edges"] = cube_edges;
-
-    // Criamos um terceiro objeto virtual (SceneObject) que se refere aos eixos XYZ.
-    SceneObject axes;
-    axes.name           = "Eixos XYZ";
-    axes.first_index    = (60*sizeof(GLuint)); // Primeiro índice está em indices[60]
-    axes.num_indices    = 6; // Último índice está em indices[65]; total de 6 índices.
-    axes.rendering_mode = GL_LINES; // Índices correspondem ao tipo de rasterização GL_LINES.
-    g_VirtualScene["axes"] = axes;
-
-    // Criamos um buffer OpenGL para armazenar os índices acima
-    GLuint indices_id;
-    glGenBuffers(1, &indices_id);
-
-    // "Ligamos" o buffer. Note que o tipo agora é GL_ELEMENT_ARRAY_BUFFER.
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices_id);
-
-    // Alocamos memória para o buffer.
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), NULL, GL_STATIC_DRAW);
-
-    // Copiamos os valores do array indices[] para dentro do buffer.
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(indices), indices);
-
-    // NÃO faça a chamada abaixo! Diferente de um VBO (GL_ARRAY_BUFFER), um
-    // array de índices (GL_ELEMENT_ARRAY_BUFFER) não pode ser "desligado",
-    // caso contrário o VAO irá perder a informação sobre os índices.
-    //
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // XXX Errado!
-    //
-
-    // "Desligamos" o VAO, evitando assim que operações posteriores venham a
-    // alterar o mesmo. Isso evita bugs.
-    glBindVertexArray(0);
-
-    // Retornamos o ID do VAO. Isso é tudo que será necessário para renderizar
-    // os triângulos definidos acima. Veja a chamada glDrawElements() em main().
-    return vertex_array_object_id;
-}
-
-// Constrói triângulos para futura renderização
-GLuint BuildTrianglesNeg()
-{
-    // Primeiro, definimos os atributos de cada vértice.
-
-    // A posição de cada vértice é definida por coeficientes em um sistema de
-    // coordenadas local de cada modelo geométrico. Note o uso de coordenadas
-    // homogêneas.  Veja as seguintes referências:
-    //
-    //  - slides 35-48 do documento Aula_08_Sistemas_de_Coordenadas.pdf;
-    //  - slides 184-190 do documento Aula_08_Sistemas_de_Coordenadas.pdf;
-    //
-    // Este vetor "model_coefficients" define a GEOMETRIA (veja slides 103-110 do documento Aula_04_Modelagem_Geometrica_3D.pdf).
-    //
-    GLfloat model_coefficients[] = {
-    // Vértices de um cubo
-    //    X      Y     Z     W
-        -0.5f,  0.0f,  0.5f, 1.0f, // posição do vértice 0
-        -0.5f, 1.0f,  0.5f, 1.0f, // posição do vértice 1
-         0.5f, 1.0f,  0.5f, 1.0f, // posição do vértice 2
-         0.5f,  0.0f,  0.5f, 1.0f, // posição do vértice 3
-        -0.5f,  0.0f, -0.5f, 1.0f, // posição do vértice 4
-        -0.5f, 1.0f, -0.5f, 1.0f, // posição do vértice 5
-         0.5f, 1.0f, -0.5f, 1.0f, // posição do vértice 6
+        -0.5f,  1.0f, -0.5f, 1.0f, // posição do vértice 5
+         0.5f,  1.0f, -0.5f, 1.0f, // posição do vértice 6
          0.5f,  0.0f, -0.5f, 1.0f, // posição do vértice 7
     // Vértices para desenhar o eixo X
     //    X      Y     Z     W
@@ -1548,17 +1255,17 @@ GLuint BuildTrianglesNeg()
     // através de 12 triângulos que serão desenhados com o modo de renderização
     // GL_TRIANGLES.
         0, 2, 1, // triângulo 1
-        7, 5, 6,// triângulo 2
-        3, 6, 2,// triângulo 3
-        4, 3, 0,// triângulo 4
-        4, 1, 5,// triângulo 5
-        1, 6, 5,// triângulo 6
-        0, 3, 2,// triângulo 7
-        7, 4, 5,// triângulo 8
-        3, 7, 6,// triângulo 9
-        4, 7, 3,// triângulo 10
-        4, 0, 1,// triângulo 11
-        1, 2, 6,// triângulo 12
+        7, 5, 6, // triângulo 2
+        3, 6, 2, // triângulo 3
+        4, 3, 0, // triângulo 4
+        4, 1, 5, // triângulo 5
+        1, 6, 5, // triângulo 6
+        0, 3, 2, // triângulo 7
+        7, 4, 5, // triângulo 8
+        3, 7, 6, // triângulo 9
+        4, 7, 3, // triângulo 10
+        4, 0, 1, // triângulo 11
+        1, 2, 6, // triângulo 12
     // Definimos os índices dos vértices que definem as ARESTAS de um cubo
     // através de 12 linhas que serão desenhadas com o modo de renderização
     // GL_LINES.
@@ -2195,19 +1902,6 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
 
     float delta = 3.141592 / 16; // 22.5 graus, em radianos.
 
-    if (key == GLFW_KEY_K && action == GLFW_PRESS)
-    {
-        //timer = 0;
-        startmove = !startmove;
-    }
-    if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
-    {
-        timer += 3;
-    }
-    if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
-    {
-        timer -= 3;
-    }
     if (key == GLFW_KEY_X && action == GLFW_PRESS)
     {
         g_AngleX += (mod & GLFW_MOD_SHIFT) ? -delta : delta;
@@ -2232,8 +1926,6 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         g_ForearmAngleZ = 0.0f;
         g_TorsoPositionX = 0.0f;
         g_TorsoPositionY = 0.0f;
-        timer = 0;
-        reset = true;
     }
 
     // Se o usuário apertar a tecla P, utilizamos projeção perspectiva.
@@ -2339,62 +2031,6 @@ void ErrorCallback(int error, const char* description)
 {
     fprintf(stderr, "ERROR: GLFW: %s\n", description);
 }
-
-
-void TextRendering_ShowBodyAngles(
-    GLFWwindow* window,
-    Teta angulo
-)
-{
-    if ( !g_ShowInfoText )
-        return;
-
-    float pad = TextRendering_LineHeight(window);
-//Acentrox eixo central, Acentroy (comprmento)
-
-//abre/fecha,Rot In/Ex, Frente/tras
-//Aombrozd , Aombroyd, Aombroxd
-//Aombroze , Aombroye, Aombroxe
-
-//supi/pron, ext/flex
-//Acotovyd ,Acotovxe
-//Acotovyd ,Acotovxe
-
-//abre/fecha, rot ex/int, frent/tras
-//Aquadrildz, Aquadrildy, Aquadrildx
-//Aquadrilez, Aquadriley, Aquadrilex
-
-//estica/flex
-//Ajoelhox
-
-//yoko/inverso, rot ext/in,estica/flex,
-//Apedz, Apedy, Apedx
-    //TextRendering_PrintString(window, " Model matrix             Model     In World Coords.", -1.0f, 1.0f-pad, 1.0f);
-
-    char buffert[80];
-    snprintf(buffert, 80, "Timer     %.2f \n", timer);
-    TextRendering_PrintString(window, buffert, -1.0f+pad/10, 1.0f-1*pad, 1.0f);
-    char buffero[80];
-    snprintf(buffero, 80, "Ombro     %.2f x,%2.2f y,%2.2f z     %.2f x,%2.2f y,%2.2f z \n", angulo.ombroe.x, angulo.ombroe.y, angulo.ombroe.z, angulo.ombrod.x, angulo.ombrod.y, angulo.ombrod.z);
-    TextRendering_PrintString(window, buffero, -1.0f+pad/10, 1.0f-2*pad, 1.0f);
-    char buffercv[80];
-    snprintf(buffercv, 80,"Cotovelo  %.2f x,%2.2f y,%2.2f z     %.2f x,%2.2f y,%2.2f z \n", angulo.cotove.x, angulo.cotove.y, angulo.cotove.z, angulo.cotovd.x, angulo.cotovd.y, angulo.cotovd.z);
-    TextRendering_PrintString(window, buffercv, -1.0f+pad/10, 1.0f-3*pad, 1.0f);
-    char bufferc[80];
-    snprintf(bufferc, 80, "Central             %.2f x,%2.2f y,%2.2f z \n", angulo.centro.x, angulo.centro.y, angulo.centro.z);
-    TextRendering_PrintString(window, bufferc, -1.0f+pad/10, 1.0f-4*pad, 1.0f);
-    char bufferq[80];
-    snprintf(bufferq, 80, "Quadril   %.2f x,%2.2f y,%2.2f z     %.2f x,%2.2f y,%2.2f z \n", angulo.quadrile.x, angulo.quadrile.y, angulo.quadrile.z, angulo.quadrild.x, angulo.quadrild.y, angulo.quadrild.z);
-    TextRendering_PrintString(window, bufferq, -1.0f+pad/10, 1.0f-5*pad, 1.0f);
-    char bufferj[80];
-    snprintf(bufferj, 80, "Joelho    %.2f x,%2.2f y,%2.2f z     %.2f x,%2.2f y,%2.2f z \n", angulo.joelhoe.x, angulo.joelhoe.y, angulo.joelhoe.z, angulo.joelhod.x, angulo.joelhod.y, angulo.joelhod.z);
-    TextRendering_PrintString(window, bufferj, -1.0f+pad/10, 1.0f-6*pad, 1.0f);
-    char bufferp[80];
-    snprintf(bufferp, 80, "Pe        %.2f x,%2.2f y,%2.2f z     %.2f x,%2.2f y,%2.2f z \n", angulo.pee.x, angulo.pee.y, angulo.pee.z, angulo.ped.x, angulo.ped.y, angulo.ped.z);
-    TextRendering_PrintString(window, bufferp, -1.0f+pad/10, 1.0f-7*pad, 1.0f);
-
-}
-
 
 // Esta função recebe um vértice com coordenadas de modelo p_model e passa o
 // mesmo por todos os sistemas de coordenadas armazenados nas matrizes model,
