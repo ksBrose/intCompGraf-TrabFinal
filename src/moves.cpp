@@ -83,6 +83,15 @@ glm::vec3 get3DBezierCurveGrau2(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, float 
 
     return glm::vec3(x, y, z);
 }
+// Cálculo da Curva de Bezier 3D de 3o grau
+glm::vec3 get3DBezierCurveGrau3(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, float t){
+
+    float x = pow(1-t,3)*p0.x + 3*pow(t,2)*(1-t)*p1.x + 3*t*pow(1-t,2)*p2.x + pow(t,3)*p3.x;
+    float y = pow(1-t,3)*p0.y + 3*pow(t,2)*(1-t)*p1.y + 3*t*pow(1-t,2)*p2.y + pow(t,3)*p3.y;
+    float z = pow(1-t,3)*p0.z + 3*pow(t,2)*(1-t)*p1.z + 3*t*pow(1-t,2)*p2.z + pow(t,3)*p3.z;
+
+    return glm::vec3(x, y, z);
+}
 
 void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
 {
@@ -105,9 +114,7 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
     if (*timer > 9 && *timer <= 12)//posição de preparação pt1
     {
         tt = (*timer - 9)/3;
-        //angulo->quadrile.z += dt * 10/3;
         angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 10.0f), tt);//abre uma perna
-
                                                             //fecha um pouco os braços-v
         angulo->ombrod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(15.0f, 87.0f, 36.0f), tt);
         angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(15.0f, 87.0f, 24.0f), tt);
@@ -133,14 +140,14 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p2 = glm::vec3(0.65f, -0.25f, 0.0f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt/2);  //desce para frente
         angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 00.0f, 0.0f),glm::vec3(0.0f, 90.0f, 1.0f), tt);
-                                                            //quadril da frente a 45º---v
+
         angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt/2);
         angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt/2);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+
         angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 10.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt/2);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(0.0f, 30.0f, 0.0f),glm::vec3(-21.0f, 00.0f, 0.0f), tt/2);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(0.0f, 30.0f, 0.0f),glm::vec3(-37.0f, 30.0f, 0.0f), tt/2);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
+
         angulo->ombrod = get3DBezierCurveGrau1(glm::vec3(0.0f, 87.0f, 30.0f),glm::vec3(24.0f, 87.0f, 54.0f), tt); //prepara defesa
         angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(0.0f, 87.0f, 30.0f),glm::vec3(66.0f, 63.0f, 60.0f), tt);
         angulo->cotovd = get3DBezierCurveGrau1(glm::vec3(-15.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
@@ -154,17 +161,15 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p2 = glm::vec3(0.65f, -0.25f, 0.f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, 0.5+tt/2);
         angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 90.0f, 0.0f),glm::vec3(0.0f, 90.0f-45.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
 
         angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), 0.5+tt/2);
         angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
         angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), 0.5+tt/2);
         angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+
         angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 10.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), 0.5+tt/2);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(0.0f, 30.0f, 0.0f),glm::vec3(-21.0f, 00.0f, 0.0f), 0.5+tt/2);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(0.0f, 30.0f, 0.0f),glm::vec3(-37.0f, 30.0f, 0.0f), 0.5+tt/2);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
 
         angulo->ombrod = get3DBezierCurveGrau1(glm::vec3(24.0f, 87.0f, 54.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);   //defende embaixo
         angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(66.0f, 63.0f, 60.0f),glm::vec3(0.0f, 87.0f - 45.0f, 45.0f), tt);
@@ -179,20 +184,16 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p2 = glm::vec3(1.f*2, -0.25f, 0.f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
         angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 90.0f-45.0f, 0.0f),glm::vec3(0.0f, 90.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
 
         angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(45.0f, 45.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
         angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(-37.0f, -45.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+
         //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->joelhoe.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*0.0f;
         //angulo->joelhod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt);
         angulo->joelhod.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-45.0f-21.0f);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(-21.0f, 00.0f, 0.0f),glm::vec3(-37.0f, 30.0f, 0.0f), tt);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(-37.0f, 30.0f, 0.0f),glm::vec3(-21.0f, 00.0f, 0.0f), tt);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
 
         angulo->ombrod = get3DBezierCurveGrau1(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(75.0f, 25.0f , 0.0f), tt);
         angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(0.0f, 87.0f - 45.0f, 45.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
@@ -203,18 +204,21 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
     if (*timer > 21 && *timer <= 24)//virada 180 pela direita / defendendo
     {
         tt = (*timer - 21)/3;
-        p0 = glm::vec3(1.f*2, -0.25f, 0.f);
-        p1 = glm::vec3(0.4f, -0.25f, 0.0f);
-        p2 = glm::vec3(0.65f, -0.25f, -0.80f);
-        *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
-        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 90.0f, 0.0f),glm::vec3(0.0f, -90.0f, 0.0f), tt);
+        p0 = glm::vec3(2.0f, -0.25f, 0.f);
+        p1 = glm::vec3(0.0f, -0.25f, 0.0f);
+        p2 = glm::vec3(0.4f, -0.25f, -0.40f);
+        p3 = glm::vec3(0.65f, -0.25f, -0.80f);
+        *bezier_cintura = get3DBezierCurveGrau3(p0, p1, p2, p3, tt);
+        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 90.0f, 0.0f),glm::vec3(0.0f, -90.0f+45.0f, 0.0f), tt);
                                                             //quadril da frente a 45º---v
         angulo->quadrile = get3DBezierCurveGrau2(glm::vec3(-37.0f, 0.0f, 10.0f), glm::vec3(140.0f, 45.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
         angulo->quadrild = get3DBezierCurveGrau2(glm::vec3(45.0f, 0.0f, 10.0f), glm::vec3(70.0f, 45.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
+        angulo->quadrile.y = (1-tt)*0.0f + tt*(-45.0f);
+        angulo->quadrild.y = (1-tt)*0.0f + tt*(45.0f);
         angulo->joelhoe.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-190.0f) + pow(tt,2)*0.0f;
         angulo->joelhod.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-110.0f) + pow(tt,2)*(-45.0f-21.0f);
 
-        angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(75.0f, 25.0f , 0.0f),glm::vec3(66.0f*1.5, 63.0f*1.6, 60.0f*1.6),glm::vec3(0.0f, 87.0f , 45.0f), tt); //prepara defesa
+        angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(75.0f, 25.0f , 0.0f),glm::vec3(66.0f*1.5, 63.0f*1.6, 60.0f*1.6),glm::vec3(0.0f, 87.0f -45.0f, 45.0f), tt); //prepara defesa
         angulo->ombroe = get3DBezierCurveGrau2(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(24.0f*6, 87.0f*2.5, 54.0f*2.5),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotovd = get3DBezierCurveGrau2(glm::vec3(0.0f, -90.0f, 0.0f),glm::vec3(-90.0f*1.7, 90.0f*1.7, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau2(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(110.0f, -90.0f, 0.0f),glm::vec3(-110.0f, 90.0f, 0.0f), tt);
@@ -228,21 +232,18 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p1 = glm::vec3(-0.15f, -0.25f, -0.80f);
         p2 = glm::vec3(-0.80f, -0.25f, -0.80f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
-        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, -90.0f, 0.0f),glm::vec3(0.0f, -90.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
+        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, -90.0f+45.0f, 0.0f),glm::vec3(0.0f, -90.0f, 0.0f), tt);
 
-        angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(45.0f, 0.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
-        angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(-37.0f, 0.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+        angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(45.0f, 45.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
+        angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(-37.0f, -45.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
+
         //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->joelhod.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*0.0f;
         //angulo->joelhod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt);
         angulo->joelhoe.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-45.0f-21.0f);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(-21.0f, 00.0f, 0.0f),glm::vec3(-37.0f, 30.0f, 0.0f), tt);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(-37.0f, 30.0f, 0.0f),glm::vec3(-21.0f, 00.0f, 0.0f), tt);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
+
         angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(75.0f, 25.0f , 0.0f), tt);
         angulo->ombrod = get3DBezierCurveGrau1(glm::vec3(0.0f, 87.0f - 45.0f, 45.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau1(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(0.0f, -90.0f, 0.0f), tt);
@@ -256,14 +257,16 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p1 = glm::vec3(0.2f, -0.25f, -0.80f);
         p2 = glm::vec3(0.2f, -0.25f, -0.3f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
-        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, -90.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
+        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, -90.0f, 0.0f),glm::vec3(0.0f, -45.0f, 0.0f), tt);
                                                             //quadril da frente a 45º---v
         angulo->quadrild = get3DBezierCurveGrau2(glm::vec3(-37.0f, 0.0f, 10.0f), glm::vec3(140.0f, 45.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
         angulo->quadrile = get3DBezierCurveGrau2(glm::vec3(45.0f, 0.0f, 10.0f), glm::vec3(70.0f, 45.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
+        angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
+        angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
         angulo->joelhod.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-190.0f) + pow(tt,2)*0.0f;
         angulo->joelhoe.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-110.0f) + pow(tt,2)*(-45.0f-21.0f);
 
-        angulo->ombroe = get3DBezierCurveGrau2(glm::vec3(75.0f, 25.0f , 0.0f),glm::vec3(66.0f*1.5, 63.0f*1.6, 60.0f*1.6),glm::vec3(0.0f, 87.0f , 45.0f), tt); //prepara defesa
+        angulo->ombroe = get3DBezierCurveGrau2(glm::vec3(75.0f, 25.0f , 0.0f),glm::vec3(66.0f*1.5, 63.0f*1.6, 60.0f*1.6),glm::vec3(0.0f, 87.0f-45.0f , 45.0f), tt); //prepara defesa
         angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(24.0f*6, 87.0f*2.5, 54.0f*2.5),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau2(glm::vec3(0.0f, -90.0f, 0.0f),glm::vec3(-90.0f*1.7, 90.0f*1.7, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->cotovd = get3DBezierCurveGrau2(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(110.0f, -90.0f, 0.0f),glm::vec3(-110.0f, 90.0f, 0.0f), tt);
@@ -277,24 +280,22 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p1 = glm::vec3(0.2f, -0.25f, 0.5f);
         p2 = glm::vec3(0.2f, -0.25f, 1.3f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
-        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
+        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, -45.0f, 0.0f),glm::vec3(0.0f, 45.0f, 0.0f), tt);
 
         angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(45.0f, 0.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
         angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(-37.0f, 0.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
-        //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
+        angulo->quadrile.y = (1-tt)*45.0f + tt*(-45.0f);
+        angulo->quadrild.y = (1-tt)*-45.0f + tt*(45.0f);
+
+        //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);k
         angulo->joelhoe.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*0.0f;
         //angulo->joelhod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt);
         angulo->joelhod.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-45.0f-21.0f);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(-21.0f, 00.0f, 0.0f),glm::vec3(-37.0f, 30.0f, 0.0f), tt);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(-37.0f, 30.0f, 0.0f),glm::vec3(-21.0f, 00.0f, 0.0f), tt);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
 
-        angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(90.0f, 120.0f, 30.0f),glm::vec3(200.0f, -90.0f , 20.0f), tt);
-        angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(0.0f, 87.0f , 45.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
+        angulo->ombrod = get3DBezierCurveGrau3(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(50.0f, 120.0f, 0.0f),glm::vec3(150.0f, 60.0f, 40.0f),glm::vec3(200.0f, -90.0f-45.0f , 20.0f), tt);
+        angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(0.0f, 87.0f -45.0f, 45.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotovd = get3DBezierCurveGrau1(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(-45.0f, 00.0f, 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-110.0f, 90.0f, 0.0f), tt);
 
@@ -307,24 +308,22 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p1 = glm::vec3(0.2f, -0.25f, 2.1f);
         p2 = glm::vec3(0.2f, -0.25f, 2.9f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
-        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
+        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 45.0f, 0.0f),glm::vec3(0.0f, -45.0f, 0.0f), tt);
 
         angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(45.0f, 0.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
         angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(-37.0f, 0.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+        angulo->quadrile.y = (1-tt)*-45.0f + tt*(45.0f);
+        angulo->quadrild.y = (1-tt)*45.0f + tt*(-45.0f);
+
         //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->joelhod.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*0.0f;
         //angulo->joelhod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt);
         angulo->joelhoe.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-45.0f-21.0f);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(-21.0f, 00.0f, 0.0f),glm::vec3(-37.0f, 30.0f, 0.0f), tt);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(-37.0f, 30.0f, 0.0f),glm::vec3(-21.0f, 00.0f, 0.0f), tt);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
 
-        angulo->ombroe = get3DBezierCurveGrau2(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(90.0f, 120.0f, 30.0f),glm::vec3(200.0f, -90.0f , 20.0f), tt);
-        angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(200.0f, -90.0f , 20.0f),glm::vec3(90.0f, 120.0f, 30.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
+        angulo->ombroe = get3DBezierCurveGrau3(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(50.0f, 120.0f, 0.0f),glm::vec3(150.0f, 60.0f, 40.0f),glm::vec3(200.0f, -90.0f-45.0f , 20.0f), tt);
+        angulo->ombrod = get3DBezierCurveGrau3(glm::vec3(200.0f, -90.0f-45.0f , 20.0f),glm::vec3(150.0f, 80.0f, 40.0f),glm::vec3(50.0f, 140.0f, 0.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau1(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(-45.0f, 00.0f, 0.0f), tt);
         angulo->cotovd = get3DBezierCurveGrau1(glm::vec3(-45.0f, 00.0f, 0.0f),glm::vec3(-110.0f, 90.0f, 0.0f), tt);
     }
@@ -335,23 +334,22 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p1 = glm::vec3(0.2f, -0.25f, 3.7f);
         p2 = glm::vec3(0.2f, -0.25f, 4.5f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
-        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
+        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, -45.0f, 0.0f),glm::vec3(0.0f, 45.0f, 0.0f), tt);
 
         angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(45.0f, 0.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
         angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(-37.0f, 0.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+        angulo->quadrile.y = (1-tt)*45.0f + tt*(-45.0f);
+        angulo->quadrild.y = (1-tt)*-45.0f + tt*(45.0f);
+
         //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->joelhoe.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*0.0f;
         //angulo->joelhod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt);
         angulo->joelhod.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-45.0f-21.0f);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(-21.0f, 00.0f, 0.0f),glm::vec3(-37.0f, 30.0f, 0.0f), tt);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(-37.0f, 30.0f, 0.0f),glm::vec3(-21.0f, 00.0f, 0.0f), tt);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
-        angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(90.0f, 120.0f, 30.0f),glm::vec3(200.0f, -90.0f , 20.0f), tt);
-        angulo->ombroe = get3DBezierCurveGrau2(glm::vec3(200.0f, -90.0f , 20.0f),glm::vec3(90.0f, 120.0f, 30.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
+
+        angulo->ombrod = get3DBezierCurveGrau3(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(50.0f, 120.0f, 0.0f),glm::vec3(150.0f, 60.0f, 40.0f),glm::vec3(200.0f, -90.0f-45.0f , 20.0f), tt);
+        angulo->ombroe = get3DBezierCurveGrau3(glm::vec3(200.0f, -90.0f-45.0f , 20.0f),glm::vec3(150.0f, 80.0f, 40.0f),glm::vec3(50.0f, 140.0f, 0.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotovd = get3DBezierCurveGrau1(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(-45.0f, 00.0f, 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau1(glm::vec3(-45.0f, 00.0f, 0.0f),glm::vec3(-110.0f, 90.0f, 0.0f), tt);
 
@@ -363,15 +361,18 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p1 = glm::vec3(0.2f, -0.25f, 5.0f);
         p2 = glm::vec3(-0.8f, -0.25f, 5.8f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
-        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(0.0f, 270.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
-        angulo->quadrile = get3DBezierCurveGrau2(glm::vec3(-37.0f, 0.0f, 10.0f), glm::vec3(140.0f, 45.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        angulo->quadrild = get3DBezierCurveGrau2(glm::vec3(45.0f, 0.0f, 10.0f), glm::vec3(70.0f, 45.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
+        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 45.0f, 0.0f),glm::vec3(0.0f, 270.0f -45.0f, 0.0f), tt);
+                                                                        //quadril da frente a 45º---v
+        angulo->quadrile = get3DBezierCurveGrau2(glm::vec3(-37.0f, -45.0f, 10.0f), glm::vec3(140.0f, 45.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
+        angulo->quadrild = get3DBezierCurveGrau2(glm::vec3(45.0f, 45.0f, 10.0f), glm::vec3(70.0f, 45.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
+        angulo->quadrile.y = (1-tt)*-45.0f + tt*(45.0f);
+        angulo->quadrild.y = (1-tt)*45.0f + tt*(-45.0f);
+
         angulo->joelhoe.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-190.0f) + pow(tt,2)*(-45.0f-21.0f);
         angulo->joelhod.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-110.0f) + pow(tt,2)*0.0f;
 
-        angulo->ombroe = get3DBezierCurveGrau2(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(66.0f*1.5, 63.0f*1.6, 60.0f*1.6),glm::vec3(0.0f, 87.0f , 45.0f), tt); //prepara defesa
-        angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(200.0f, -90.0f , 20.0f),glm::vec3(24.0f*4, 87.0f*2.0, 54.0f*1.0),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
+        angulo->ombroe = get3DBezierCurveGrau2(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(66.0f*1.5, 63.0f*1.6, 60.0f*1.6),glm::vec3(0.0f, 87.0f -45.0f, 45.0f), tt); //prepara defesa
+        angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(200.0f, -90.0f-45.0f , 20.0f),glm::vec3(24.0f*4, 87.0f*2.0, 54.0f*1.0),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau2(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(-90.0f*1.7, 90.0f*1.7, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->cotovd = get3DBezierCurveGrau2(glm::vec3(-45.0f, 00.0f, 0.0f),glm::vec3(110.0f, -90.0f, 0.0f),glm::vec3(-110.0f, 90.0f, 0.0f), tt);
 
@@ -384,23 +385,20 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p1 = glm::vec3(-1.6f, -0.25f, 5.8f);
         p2 = glm::vec3(-2.4f, -0.25f, 5.8f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
-        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 270.0f, 0.0f),glm::vec3(0.0f, 270.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
+        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 270.0f-45.0f, 0.0f),glm::vec3(0.0f, 270.0f, 0.0f), tt);
 
-        angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(45.0f, 0.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
-        angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(-37.0f, 0.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+        angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(45.0f, 45.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
+        angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(-37.0f, -45.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
+
         //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->joelhoe.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*0.0f;
         //angulo->joelhod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt);
         angulo->joelhod.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-45.0f-21.0f);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(-21.0f, 00.0f, 0.0f),glm::vec3(-37.0f, 30.0f, 0.0f), tt);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(-37.0f, 30.0f, 0.0f),glm::vec3(-21.0f, 00.0f, 0.0f), tt);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
+
         angulo->ombrod = get3DBezierCurveGrau1(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(75.0f, 25.0f , 0.0f), tt);
-        angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(0.0f, 87.0f , 45.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
+        angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(0.0f, 87.0f -45.0f , 45.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotovd = get3DBezierCurveGrau1(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(0.0f, -90.0f, 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-110.0f, 90.0f, 0.0f), tt);
 
@@ -409,17 +407,21 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
     {
         tt = (*timer - 45)/3;
         p0 = glm::vec3(-2.4f, -0.25f, 5.8f);
-        p1 = glm::vec3(-1.6f, -0.25f, 5.8f);
-        p2 = glm::vec3(-0.8f, -0.25f, 6.4f);
-        *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
-        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 270.0f, 0.0f),glm::vec3(0.0f, 90.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
+        p1 = glm::vec3(-0.4f, -0.25f, 5.8f);
+        p2 = glm::vec3(-0.6f, -0.25f, 6.2f);
+        p3 = glm::vec3(-0.8f, -0.25f, 6.4f);
+
+        *bezier_cintura = get3DBezierCurveGrau3(p0, p1, p2, p3, tt);
+        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 270.0f, 0.0f),glm::vec3(0.0f, 90.0f+45.0f, 0.0f), tt);
+                                                                       //quadril da frente a 45º---v
         angulo->quadrile = get3DBezierCurveGrau2(glm::vec3(-37.0f, 0.0f, 10.0f), glm::vec3(140.0f, 45.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
         angulo->quadrild = get3DBezierCurveGrau2(glm::vec3(45.0f, 0.0f, 10.0f), glm::vec3(70.0f, 45.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
+        angulo->quadrile.y = (1-tt)*0.0f + tt*(-45.0f);
+        angulo->quadrild.y = (1-tt)*0.0f + tt*(45.0f);
         angulo->joelhoe.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-190.0f) + pow(tt,2)*0.0f;
         angulo->joelhod.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-110.0f) + pow(tt,2)*(-45.0f-21.0f);
 
-        angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(75.0f, 25.0f , 0.0f),glm::vec3(66.0f*1.5, 63.0f*1.6, 60.0f*1.6),glm::vec3(0.0f, 87.0f , 45.0f), tt); //prepara defesa
+        angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(75.0f, 25.0f , 0.0f),glm::vec3(66.0f*1.5, 63.0f*1.6, 60.0f*1.6),glm::vec3(0.0f, 87.0f -45.0f, 45.0f), tt); //prepara defesa
         angulo->ombroe = get3DBezierCurveGrau2(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(24.0f*6, 87.0f*2.5, 54.0f*2.5),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotovd = get3DBezierCurveGrau2(glm::vec3(0.0f, -90.0f, 0.0f),glm::vec3(-90.0f*1.7, 90.0f*1.7, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau2(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(110.0f, -90.0f, 0.0f),glm::vec3(-110.0f, 90.0f, 0.0f), tt);
@@ -432,24 +434,20 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p1 = glm::vec3(0.0f, -0.25f, 6.4f);
         p2 = glm::vec3(0.8f, -0.25f, 6.4f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
-        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 90.0f, 0.0f),glm::vec3(0.0f, 90.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
+        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 90.0f+45.0f, 0.0f),glm::vec3(0.0f, 90.0f, 0.0f), tt);
 
-        angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(45.0f, 0.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
-        angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(-37.0f, 0.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+        angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(45.0f, 45.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
+        angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(-37.0f, -45.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
+
         //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->joelhod.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*0.0f;
         //angulo->joelhod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt);
         angulo->joelhoe.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-45.0f-21.0f);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(-21.0f, 00.0f, 0.0f),glm::vec3(-37.0f, 30.0f, 0.0f), tt);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(-37.0f, 30.0f, 0.0f),glm::vec3(-21.0f, 00.0f, 0.0f), tt);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
 
         angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(75.0f, 25.0f , 0.0f), tt);
-        angulo->ombrod = get3DBezierCurveGrau1(glm::vec3(0.0f, 87.0f, 45.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
+        angulo->ombrod = get3DBezierCurveGrau1(glm::vec3(0.0f, 87.0f - 45.0f, 45.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau1(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(0.0f, -90.0f, 0.0f), tt);
         angulo->cotovd = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-110.0f, 90.0f, 0.0f), tt);
 
@@ -461,17 +459,20 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p1 = glm::vec3(-0.2f, -0.25f, 6.4f);
         p2 = glm::vec3(-0.2f, -0.25f, 5.9f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
-        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 90.0f, 0.0f),glm::vec3(0.0f, 180.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
+        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 90.0f, 0.0f),glm::vec3(0.0f, 180.0f-45.0f, 0.0f), tt);
+                                                                         //quadril da frente a 45º---v
         angulo->quadrild = get3DBezierCurveGrau2(glm::vec3(-37.0f, 0.0f, 10.0f), glm::vec3(140.0f, 45.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
         angulo->quadrile = get3DBezierCurveGrau2(glm::vec3(45.0f, 0.0f, 10.0f), glm::vec3(70.0f, 45.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
+        angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
+        angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
         angulo->joelhod.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-190.0f) + pow(tt,2)*0.0f;
         angulo->joelhoe.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-110.0f) + pow(tt,2)*(-45.0f-21.0f);
 
-        angulo->ombroe = get3DBezierCurveGrau2(glm::vec3(75.0f, 25.0f , 0.0f),glm::vec3(66.0f*1.5, 63.0f*1.6, 60.0f*1.6),glm::vec3(0.0f, 87.0f , 45.0f), tt); //prepara defesa
+        angulo->ombroe = get3DBezierCurveGrau2(glm::vec3(75.0f, 25.0f , 0.0f),glm::vec3(66.0f*1.5, 63.0f*1.6, 60.0f*1.6),glm::vec3(0.0f, 87.0f-45.0f , 45.0f), tt); //prepara defesa
         angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(24.0f*6, 87.0f*2.5, 54.0f*2.5),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau2(glm::vec3(0.0f, -90.0f, 0.0f),glm::vec3(-90.0f*1.7, 90.0f*1.7, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->cotovd = get3DBezierCurveGrau2(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(110.0f, -90.0f, 0.0f),glm::vec3(-110.0f, 90.0f, 0.0f), tt);
+
 
 
     }
@@ -482,23 +483,20 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p1 = glm::vec3(-0.2f, -0.25f, 5.1f);
         p2 = glm::vec3(-0.2f, -0.25f, 4.3f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
-        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 180.0f, 0.0f),glm::vec3(0.0f, 180.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
+        angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 180.0f-45.0f, 0.0f),glm::vec3(0.0f, 180.0f, 0.0f), tt);
 
-        angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(45.0f, 0.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
-        angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(-37.0f, 0.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+        angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(45.0f, 45.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
+        angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(-37.0f, -45.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
+
         //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->joelhoe.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*0.0f;
         //angulo->joelhod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt);
         angulo->joelhod.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-45.0f-21.0f);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(-21.0f, 00.0f, 0.0f),glm::vec3(-37.0f, 30.0f, 0.0f), tt);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(-37.0f, 30.0f, 0.0f),glm::vec3(-21.0f, 00.0f, 0.0f), tt);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
+
         angulo->ombrod = get3DBezierCurveGrau1(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(75.0f, 25.0f , 0.0f), tt);
-        angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(0.0f, 87.0f , 45.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
+        angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(0.0f, 87.0f-45.0f , 45.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotovd = get3DBezierCurveGrau1(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(0.0f, -90.0f, 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-110.0f, 90.0f, 0.0f), tt);
 
@@ -511,20 +509,17 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p2 = glm::vec3(-0.2f, -0.25f, 2.7f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
         angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 180.0f, 0.0f),glm::vec3(0.0f, 180.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
 
         angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(45.0f, 0.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
         angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(-37.0f, 0.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+
         //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->joelhod.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*0.0f;
         //angulo->joelhod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt);
         angulo->joelhoe.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-45.0f-21.0f);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(-21.0f, 00.0f, 0.0f),glm::vec3(-37.0f, 30.0f, 0.0f), tt);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(-37.0f, 30.0f, 0.0f),glm::vec3(-21.0f, 00.0f, 0.0f), tt);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
+
         angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(75.0f, 25.0f , 0.0f), tt);
         angulo->ombrod = get3DBezierCurveGrau1(glm::vec3(75.0f, 25.0f , 0.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau1(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(0.0f, -90.0f, 0.0f), tt);
@@ -539,20 +534,17 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p2 = glm::vec3(-0.2f, -0.25f, 1.1f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
         angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 180.0f, 0.0f),glm::vec3(0.0f, 180.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
 
         angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(45.0f, 0.0f, 10.0f),glm::vec3(-37.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
         angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(-37.0f, 0.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+
         //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->joelhoe.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*0.0f;
         //angulo->joelhod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt);
         angulo->joelhod.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-45.0f-21.0f);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(-21.0f, 00.0f, 0.0f),glm::vec3(-37.0f, 30.0f, 0.0f), tt);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(-37.0f, 30.0f, 0.0f),glm::vec3(-21.0f, 00.0f, 0.0f), tt);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
+
         angulo->ombrod = get3DBezierCurveGrau1(glm::vec3(-60.0f, 0.0f, 0.0f),glm::vec3(75.0f, 25.0f , 0.0f), tt);
         angulo->ombroe = get3DBezierCurveGrau1(glm::vec3(75.0f, 25.0f , 0.0f),glm::vec3(-60.0f, 0.0f, 0.0f), tt);
         angulo->cotovd = get3DBezierCurveGrau1(glm::vec3(-110.0f, 90.0f, 0.0f),glm::vec3(0.0f, -90.0f, 0.0f), tt);
@@ -567,7 +559,7 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p2 = glm::vec3(0.8f, -0.25f, -0.2f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
         angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 180.0f, 0.0f),glm::vec3(0.0f, 360.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
+
         angulo->quadrile = get3DBezierCurveGrau2(glm::vec3(-37.0f, 0.0f, 10.0f), glm::vec3(140.0f, 45.0f, 10.0f),glm::vec3(30.0f, 90.0f, 10.0f), tt);
         angulo->quadrild = get3DBezierCurveGrau2(glm::vec3(45.0f, 0.0f, 10.0f), glm::vec3(70.0f, 0.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
         angulo->joelhoe.x = pow(1-tt,2)*(0.0f) + 2*tt*(1-tt)*(-190.0f) + pow(tt,2)*(-10.0f);
@@ -590,20 +582,16 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p2 = glm::vec3(2.4f, -0.25f, -0.2f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
         angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 360.0f, 0.0f),glm::vec3(0.0f, 495.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
 
         angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(30.0f, 90.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
         angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(45.0f, 0.0f, 10.0f),glm::vec3(30.0f, 90.0f, 10.0f), tt);
-        //angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+
         //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->joelhoe.x = pow(1-tt,2)*(-10.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-45.0f-21.0f);
         //angulo->joelhod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt);
         angulo->joelhod.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-10.0f);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(25.0f, 0.0f, 0.0f),glm::vec3(-21.0f, 0.0f, 0.0f), tt);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(-21.0f, 0.0f, 0.0f),glm::vec3(25.0f, 0.0f, 0.0f), tt);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
 
         angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(0.0f, 90.0f, 20.0f),glm::vec3(66.0f*1.5, 63.0f*1.6, 60.0f*1.6),glm::vec3(45.0f, -90.0f , 0.0f), tt); //prepara defesa
         angulo->ombroe = get3DBezierCurveGrau2(glm::vec3(45.0f, -90.0f , 0.0f),glm::vec3(24.0f*4, 87.0f*1.5, 54.0f*1.5),glm::vec3(0.0f, 90.0f, 20.0f), tt);
@@ -620,17 +608,15 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 495.0f, 0.0f),glm::vec3(0.0f, 360.0f, 0.0f), tt);
 
         angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(30.0f, 90.0f, 10.0f),glm::vec3(30.0f, 90.0f, 10.0f), tt);
-        //angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
         angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(45.0f, 0.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+
         //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->joelhod.x = pow(1-tt,2)*(-10.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-10.0f);
         //angulo->joelhod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt);
         angulo->joelhoe.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-45.0f-21.0f);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(25.0f, 0.0f, 0.0f),glm::vec3(25.0f, 0.0f, 0.0f), tt);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(-21.0f, 0.0f, 0.0f),glm::vec3(-21.0f, 0.0f, 0.0f), tt);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
+
         angulo->ombroe = get3DBezierCurveGrau2(glm::vec3(0.0f, 90.0f, 20.0f),glm::vec3(24.0f*4, 87.0f*1.5, 54.0f*1.5),glm::vec3(0.0f, 90.0f, 20.0f), tt); //prepara defesa
         angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(45.0f, -90.0f , 0.0f),glm::vec3(66.0f*1.5, 63.0f*1.6, 60.0f*1.6),glm::vec3(45.0f, -90.0f , 0.0f), tt);
         angulo->cotove = get3DBezierCurveGrau2(glm::vec3(-90.0f, 90.0f, 0.0f),glm::vec3(110.0f, -90.0f, 0.0f),glm::vec3(-90.0f, 90.0f, 0.0f), tt);
@@ -645,20 +631,17 @@ void move_one(Teta *angulo, float dt, float *timer, glm::vec3 *bezier_cintura)
         p2 = glm::vec3(-0.8f, -0.25f, -0.8f);
         *bezier_cintura = get3DBezierCurveGrau2(p0, p1, p2, tt);
         angulo->centro = get3DBezierCurveGrau1(glm::vec3(0.0f, 360.0f, 0.0f),glm::vec3(0.0f, 225.0f, 0.0f), tt);
-                                                            //quadril da frente a 45º---v
 
         angulo->quadrild = get3DBezierCurveGrau1(glm::vec3(30.0f, 90.0f, 10.0f),glm::vec3(45.0f, 0.0f, 10.0f), tt);
-        //angulo->quadrile.y = (1-tt)*0.0f + tt*(45.0f);
         angulo->quadrile = get3DBezierCurveGrau1(glm::vec3(45.0f, 0.0f, 10.0f),glm::vec3(30.0f, 90.0f, 10.0f), tt);
-        //angulo->quadrild.y = (1-tt)*0.0f + tt*(-45.0f);
-                                            //quadril abre tras a 36.3 (pe fica a 53º)---^
+
         //angulo->joelhoe = get3DBezierCurveGrau1(glm::vec3(-45.0f-21.0f, 0.0f, 0.0f),glm::vec3(0.0f, 0.0f, 0.0f), tt);
         angulo->joelhod.x = pow(1-tt,2)*(-10.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-45.0f-21.0f);
         //angulo->joelhod = get3DBezierCurveGrau1(glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(-45.0f-21.0f, 0.0f, 0.0f), tt);
         angulo->joelhoe.x = pow(1-tt,2)*(-45.0f-21.0f) + 2*tt*(1-tt)*(-90.0f) + pow(tt,2)*(-10.0f);
         angulo->ped = get3DBezierCurveGrau1(glm::vec3(25.0f, 0.0f, 0.0f),glm::vec3(-21.0f, 0.0f, 0.0f), tt);
         angulo->pee = get3DBezierCurveGrau1(glm::vec3(-21.0f, 0.0f, 0.0f),glm::vec3(25.0f, 0.0f, 0.0f), tt);
-                            //calcanhar-dedos 20 calcanhar-joelho 50 angulo 66 (-23.6)
+
         angulo->ombroe = get3DBezierCurveGrau2(glm::vec3(0.0f, 90.0f, 20.0f),glm::vec3(66.0f*1.5, 63.0f*1.6, 60.0f*1.6),glm::vec3(45.0f, -90.0f , 0.0f), tt); //prepara defesa
         angulo->ombrod = get3DBezierCurveGrau2(glm::vec3(45.0f, -90.0f , 0.0f),glm::vec3(24.0f*4, 87.0f*1.5, 54.0f*1.5),glm::vec3(0.0f, 90.0f, 20.0f), tt);
         angulo->cotove = get3DBezierCurveGrau2(glm::vec3(-90.0f, 90.0f, 0.0f),glm::vec3(-90.0f*1.7, 90.0f*1.7, 0.0f),glm::vec3(-90.0f, -90.0f, 0.0f), tt);
