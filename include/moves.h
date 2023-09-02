@@ -32,3 +32,5 @@ void inicializa_angulos(Teta *angulo, glm::vec3 *bezier_cintura);
 glm::vec3 get3DBezierCurveGrau2(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, float t);
 
 glm::vec3 get3DBezierCurveGrau1(glm::vec3 p0, glm::vec3 p1, float t);
+
+glm::vec3 get3DBezierCurveGrau3(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, float t);
