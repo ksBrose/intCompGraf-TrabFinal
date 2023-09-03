@@ -52,17 +52,6 @@ void main()
 
     gl_Position = projection * view * model * model_coefficients;
 
-    // Como as variáveis acima  (tipo vec4) são vetores com 4 coeficientes,
-    // também é possível acessar e modificar cada coeficiente de maneira
-    // independente. Esses são indexados pelos nomes x, y, z, e w (nessa
-    // ordem, isto é, 'x' é o primeiro coeficiente, 'y' é o segundo, ...):
-    //
-    //     gl_Position.x = model_coefficients.x;
-    //     gl_Position.y = model_coefficients.y;
-    //     gl_Position.z = model_coefficients.z;
-    //     gl_Position.w = model_coefficients.w;
-    //
-
     // Agora definimos outros atributos dos vértices que serão interpolados pelo
     // rasterizador para gerar atributos únicos para cada fragmento gerado.
 
