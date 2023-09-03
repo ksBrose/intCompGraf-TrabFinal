@@ -616,7 +616,7 @@ int main(int argc, char* argv[])
         glm::mat4 model = Matrix_Identity(); // Transformação inicial = identidade.
 
         // Translação inicial do torso
-        model = model* Matrix_Scale(0.5f, 0.5f, 0.5f) * Matrix_Translate(g_TorsoPositionX - 0.0f, g_TorsoPositionY + 1.5f,g_TorsoPositionX- 2.0f);
+        model = model* Matrix_Scale(0.7f, 0.7f, 0.7f) * Matrix_Translate(g_TorsoPositionX - 0.0f, g_TorsoPositionY + 1.5f,g_TorsoPositionX- 2.0f);
         // Guardamos matriz model atual na pilha
 /*        PushMatrix(model);
             // Atualizamos a matriz model (multiplicação à direita) para fazer um escalamento do torso
