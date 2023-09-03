@@ -5,16 +5,9 @@
 //    INF01047 Fundamentos de Computação Gráfica
 //               Prof. Eduardo Gastal
 //
-//                   LABORATÓRIO 5
+//                   Trabalho Final
 //
 
-// Arquivos "headers" padrões de C podem ser incluídos em um
-// programa C++, sendo necessário somente adicionar o caractere
-// "c" antes de seu nome, e remover o sufixo ".h". Exemplo:
-//    #include <stdio.h> // Em C
-//  vira
-//    #include <cstdio> // Em C++
-//
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -382,14 +375,6 @@ int main(int argc, char* argv[])
     LoadTextureImage("../../data/default-grey.jpg"); // TextureImage16
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
-/*    ObjModel spheremodel("../../data/sphere.obj");
-    ComputeNormals(&spheremodel);
-    BuildTrianglesAndAddToVirtualScene(&spheremodel);
-
-    ObjModel bunnymodel("../../data/bunny.obj");
-    ComputeNormals(&bunnymodel);
-    BuildTrianglesAndAddToVirtualScene(&bunnymodel);
-*/
     ObjModel planemodel("../../data/plane.obj");
     ComputeNormals(&planemodel);
     BuildTrianglesAndAddToVirtualScene(&planemodel);
@@ -486,18 +471,8 @@ int main(int argc, char* argv[])
         // vértices apontados pelo VAO criado pela função BuildTriangles(). Veja
         // comentários detalhados dentro da definição de BuildTriangles().
         glBindVertexArray(vertex_array_object_id);
+        
 /**Boneco add**/
-
-        // Computamos a posição da câmera utilizando coordenadas esféricas.  As
-        // variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
-        // controladas pelo mouse do usuário. Veja as funções CursorPosCallback()
-        // e ScrollCallback().
-        //if(camera_type){
-        //float r = g_CameraDistance;
-        //float y = r*sin(g_CameraPhi);
-        //float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
-        //float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
-        //}
 //**free camera add**/
         //float r = g_CameraDistance;
         if(!camera_type)
@@ -599,39 +574,14 @@ int main(int argc, char* argv[])
         #define BONSAI2 10
         #define BONSAI3 11
         #define BONSAI4 12
-
-        // ##### TAREFAS DO LABORATÓRIO 3
-
-        // Cada cópia do cubo possui uma matriz de modelagem independente,
-        // já que cada cópia estará em uma posição (rotação, escala, ...)
-        // diferente em relação ao espaço global (World Coordinates). Veja
-        // slides 2-14 e 184-190 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
-        //
-        // Entretanto, neste laboratório as matrizes de modelagem dos cubos
-        // serão construídas de maneira hierárquica, tal que operações em
-        // alguns objetos influenciem outros objetos. Por exemplo: ao
-        // transladar o torso, a cabeça deve se movimentar junto.
-        // Veja slides 243-273 do documento Aula_08_Sistemas_de_Coordenadas.pdf
-        //
+        
         glm::mat4 model = Matrix_Identity(); // Transformação inicial = identidade.
 
         // Translação inicial do torso
         model = model* Matrix_Scale(0.7f, 0.7f, 0.7f) * Matrix_Translate(g_TorsoPositionX - 0.0f, g_TorsoPositionY + 1.5f,g_TorsoPositionX- 2.0f);
         // Guardamos matriz model atual na pilha
-/*        PushMatrix(model);
-            // Atualizamos a matriz model (multiplicação à direita) para fazer um escalamento do torso
-            model = model * Matrix_Scale(0.8f, 1.0f, 0.2f);
-            // Enviamos a matriz "model" para a placa de vídeo (GPU). Veja o
-            // arquivo "shader_vertex.glsl", onde esta é efetivamente
-            // aplicada em todos os pontos.
-            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-            // Desenhamos um cubo. Esta renderização irá executar o Vertex
-            // Shader definido no arquivo "shader_vertex.glsl", e o mesmo irá
-            // utilizar as matrizes "model", "view" e "projection" definidas
-            // acima e já enviadas para a placa de vídeo (GPU).
-            DrawCube(render_as_black_uniform); // #### TORSO
-        PopMatrix(model);
- */     glBindVertexArray(vertex_array_object_id_neg);//muda ponto de referencia de construção de cubos
+
+        glBindVertexArray(vertex_array_object_id_neg);//muda ponto de referencia de construção de cubos
             PushMatrix(model);                                  // pilha = I
                 model = model * Matrix_Translate(bezier_cintura.x, bezier_cintura.y, bezier_cintura.z); // Posição do torço (pulos)
                 PushMatrix(model);                              // pilha = I * Tcentro
@@ -656,10 +606,6 @@ int main(int argc, char* argv[])
                                 DrawCube(render_as_black_uniform); // #### TRONCO // Desenhamos o tronco
                             }
                         PopMatrix(model);                       // pilha = I * Tc * Rp * Rinclinação
-                //PopMatrix(model);
-            //PopMatrix(model);
-        // Tiramos da pilha a matriz model guardada anteriormente
-        //PopMatrix(model);
                 /*cabeça*/PushMatrix(model);                    // pilha = I * Tc * Rp * Rinclinação
                             model = model * Matrix_Translate(0.0f, 1.05f, 0.0f); // translação da cabeça para topo do tronco
                             PushMatrix(model);                  // pilha = I * Tc * Rp * Ri *Tcabeca
@@ -1095,18 +1041,7 @@ int main(int argc, char* argv[])
             PopMatrix(model);                           // pilha = I
         // Neste ponto a matriz model recuperada é a matriz inicial (entre os pés)
         PopMatrix(model); //origem
-        /*//desenha cubo de teste
-        model = model * Matrix_Translate(0.0f, 0.0f, 0.0f); // Posição
-        model = model // rotação
-            * Matrix_Rotate_Z(0)  // TERCEIRO rotação Z de Euler
-            * Matrix_Rotate_Y(0)  // SEGUNDO rotação Y de Euler
-            * Matrix_Rotate_X(0); // PRIMEIRO rotação X de Eule
-        model = model * Matrix_Scale(1.0f, 1.0f, 1.0f); //escalamento
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-        DrawCube(render_as_black_uniform); // #### CUBO // Desenhamos o cubo
-        */
-
-
+        
         // Agora queremos desenhar os eixos XYZ de coordenadas GLOBAIS.
         // Para tanto, colocamos a matriz de modelagem igual à identidade.
         // Veja slides 2-14 e 184-190 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
