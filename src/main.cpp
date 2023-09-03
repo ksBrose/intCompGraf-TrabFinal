@@ -565,6 +565,7 @@ int main(int argc, char* argv[])
         #define PLANE  0
         #define WALL  1
         #define BONECO 2
+        #define DOOR 3
         // ##### TAREFAS DO LABORATÓRIO 3
 
         // Cada cópia do cubo possui uma matriz de modelagem independente,
