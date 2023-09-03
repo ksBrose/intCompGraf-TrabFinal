@@ -355,7 +355,10 @@ int main(int argc, char* argv[])
 
     // Carregamos duas imagens para serem utilizadas como textura
     LoadTextureImage("../../data/wood_floor.jpg");      // TextureImage0
-    LoadTextureImage("../../data/wood-wall-texture.jpg"); // TextureImage1
+    LoadTextureImage("../../data/wood_floor_specular.jpg");// TextureImage1
+    LoadTextureImage("../../data/wood_floor_ambient.jpg"); // TextureImage2
+    LoadTextureImage("../../data/wood_floor_normal.jpg"); // TextureImage3
+    LoadTextureImage("../../data/wood-wall-texture-3.jpg"); // TextureImage4
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
 /*    ObjModel spheremodel("../../data/sphere.obj");
@@ -841,6 +844,7 @@ int main(int argc, char* argv[])
 //        #define SPHERE 0
 //        #define BUNNY  1
         #define PLANE  0
+        #define WALL  1
 /*
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(-1.0f,0.0f,0.0f)
@@ -864,43 +868,44 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, PLANE);
         DrawVirtualObject("the_plane");
-        
+
 /** Paredes e Teto Add **/
         // Desenhamos o plano da parede de fundo
-        model = Matrix_Translate(0.0f, 1.5f, -5.0f)
-                * Matrix_Scale(5.0f, 2.5f, 1.0f)
-                * Matrix_Rotate_X(M_PI_2)
-                * Matrix_Rotate_Y(M_PI);
+        model = Matrix_Translate(0.0f, 2.0f, -5.0f)
+                * Matrix_Scale(5.0f, 2.0f, 1.0f)
+                //* Matrix_Rotate_X(M_PI_2)
+                * Matrix_Rotate_X(M_PI_2);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, PLANE);
+        glUniform1i(g_object_id_uniform, WALL);
         DrawVirtualObject("the_plane");
 
         // Desenhamos o plano da parede da frente
-        model = Matrix_Translate(0.0f, 1.5f, 5.0f)
-                * Matrix_Scale(5.0f, 2.5f, 1.0f)
+        model = Matrix_Translate(0.0f, 2.0f, 5.0f)
+                * Matrix_Scale(5.0f, 2.0f, 1.0f)
                 * Matrix_Rotate_X(M_PI_2)
-                * Matrix_Rotate_Y(M_PI_2)
+                //* Matrix_Rotate_Y(M_PI_2/2)
                 * Matrix_Rotate_Z(M_PI);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, PLANE);
+        glUniform1i(g_object_id_uniform, WALL);
         DrawVirtualObject("the_plane");
 
         // Desenhamos o plano da parede da direita
-        model = Matrix_Translate(5.0f, 1.5f, 0.0f)
-                * Matrix_Scale(1.0f, 2.5f, 5.0f)
+        model = Matrix_Translate(5.0f, 2.0f, 0.0f)
+                * Matrix_Scale(1.0f, 2.0f, 5.0f)
+                * Matrix_Rotate_X(M_PI_2)
                 * Matrix_Rotate_Z(M_PI_2);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, PLANE);
+        glUniform1i(g_object_id_uniform, WALL);
         DrawVirtualObject("the_plane");
 
 
         // Desenhamos o plano da parede da esquerda
-        model = Matrix_Translate(-5.0f, 1.5f, 0.0f)
-                * Matrix_Scale(1.0f, 2.5f, 5.0f)
+        model = Matrix_Translate(-5.0f, 2.0f, 0.0f)
+                * Matrix_Scale(1.0f, 2.0f, 5.0f)
                 * Matrix_Rotate_X(M_PI_2)
                 * Matrix_Rotate_Z(3 * M_PI_2);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, PLANE);
+        glUniform1i(g_object_id_uniform, WALL);
         DrawVirtualObject("the_plane");
 
         // Desenhamos o plano do teto
@@ -1106,6 +1111,11 @@ void LoadShadersFromFiles()
     glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage0"), 0);
     glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage1"), 1);
     glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage2"), 2);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage3"), 3);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage4"), 4);
+
+
+
     glUseProgram(0);
 }
 
