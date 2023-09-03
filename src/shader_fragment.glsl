@@ -113,60 +113,6 @@ void main()
     vec3 Ka; // Refletância ambiente
     float q; // Expoente especular para o modelo de iluminação de Phong
 
-
-/*
-    if ( object_id == SPHERE )
-    {
-        // PREENCHA AQUI as coordenadas de textura da esfera, computadas com
-        // projeção esférica EM COORDENADAS DO MODELO. Utilize como referência
-        // o slides 134-150 do documento Aula_20_Mapeamento_de_Texturas.pdf.
-        // A esfera que define a projeção deve estar centrada na posição
-        // "bbox_center" definida abaixo.
-
-        // Você deve utilizar:
-        //   função 'length( )' : comprimento Euclidiano de um vetor
-        //   função 'atan( , )' : arcotangente. Veja https://en.wikipedia.org/wiki/Atan2.
-        //   função 'asin( )'   : seno inverso.
-        //   constante M_PI
-        //   variável position_model
-
-        vec4 bbox_center = (bbox_min + bbox_max) / 2.0;
-
-        vec4 p_c = position_model - bbox_center;
-
-        float raio = length (p_c);
-
-        float theta = atan( position_model.x , position_model.z);
-        float phi = asin (position_model.y / raio);
-
-        U = (theta + M_PI)/(2.0*M_PI);
-
-        V = (phi + M_PI_2) / M_PI;
-    }
-    else if ( object_id == BUNNY )
-    {
-        // PREENCHA AQUI as coordenadas de textura do coelho, computadas com
-        // projeção planar XY em COORDENADAS DO MODELO. Utilize como referência
-        // o slides 99-104 do documento Aula_20_Mapeamento_de_Texturas.pdf,
-        // e também use as variáveis min* /max* definidas abaixo para normalizar
-        // as coordenadas de textura U e V dentro do intervalo [0,1]. Para
-        // tanto, veja por exemplo o mapeamento da variável 'p_v' utilizando
-        // 'h' no slides 158-160 do documento Aula_20_Mapeamento_de_Texturas.pdf.
-        // Veja também a Questão 4 do Questionário 4 no Moodle.
-
-        float minx = bbox_min.x;
-        float maxx = bbox_max.x;
-
-        float miny = bbox_min.y;
-        float maxy = bbox_max.y;
-
-        float minz = bbox_min.z;
-        float maxz = bbox_max.z;
-
-        U = (position_model.x-minx)/(maxx-minx);
-        V = (position_model.y-miny)/(maxy-miny);
-    }
-    else */
         if ( object_id == PLANE )
     {
         // Coordenadas de textura do plano, obtidas do arquivo OBJ.
@@ -211,14 +157,6 @@ void main()
     }
     else if ( object_id == CHEST )
     {
-        // PREENCHA AQUI as coordenadas de textura do coelho, computadas com
-        // projeção planar XY em COORDENADAS DO MODELO. Utilize como referência
-        // o slides 99-104 do documento Aula_20_Mapeamento_de_Texturas.pdf,
-        // e também use as variáveis min* /max* definidas abaixo para normalizar
-        // as coordenadas de textura U e V dentro do intervalo [0,1]. Para
-        // tanto, veja por exemplo o mapeamento da variável 'p_v' utilizando
-        // 'h' no slides 158-160 do documento Aula_20_Mapeamento_de_Texturas.pdf.
-        // Veja também a Questão 4 do Questionário 4 no Moodle.
 
         float minx = bbox_min.x;
         float maxx = bbox_max.x;
@@ -275,15 +213,6 @@ void main()
     }
         else if ( object_id == CUBE )
     {
-        // PREENCHA AQUI as coordenadas de textura do coelho, computadas com
-        // projeção planar XY em COORDENADAS DO MODELO. Utilize como referência
-        // o slides 99-104 do documento Aula_20_Mapeamento_de_Texturas.pdf,
-        // e também use as variáveis min* /max* definidas abaixo para normalizar
-        // as coordenadas de textura U e V dentro do intervalo [0,1]. Para
-        // tanto, veja por exemplo o mapeamento da variável 'p_v' utilizando
-        // 'h' no slides 158-160 do documento Aula_20_Mapeamento_de_Texturas.pdf.
-        // Veja também a Questão 4 do Questionário 4 no Moodle.
-
         float minx = bbox_min.x;
         float maxx = bbox_max.x;
 
@@ -333,15 +262,6 @@ void main()
     }
     else if ( object_id == HEAD )
     {
-        // PREENCHA AQUI as coordenadas de textura do coelho, computadas com
-        // projeção planar XY em COORDENADAS DO MODELO. Utilize como referência
-        // o slides 99-104 do documento Aula_20_Mapeamento_de_Texturas.pdf,
-        // e também use as variáveis min* /max* definidas abaixo para normalizar
-        // as coordenadas de textura U e V dentro do intervalo [0,1]. Para
-        // tanto, veja por exemplo o mapeamento da variável 'p_v' utilizando
-        // 'h' no slides 158-160 do documento Aula_20_Mapeamento_de_Texturas.pdf.
-        // Veja também a Questão 4 do Questionário 4 no Moodle.
-
         float minx = bbox_min.x;
         float maxx = bbox_max.x;
 
@@ -430,7 +350,6 @@ void main()
         V = texcoords.y;
 
         Kd = texture(TextureImage13, vec2(U,V)).rgb;
-        // PREENCHA AQUI
         // Propriedades espectrais do plano
         //Kd = vec3(0.2,0.2,0.2);     //Refletância difusa no modelo RGB = (0.2, 0.2, 0.2)
         Ks = vec3(0.3,0.3,0.3);     //Refletância especular no modelo RGB = (0.3, 0.3, 0.3)
@@ -445,7 +364,6 @@ void main()
         V = texcoords.y;
 
         Kd = texture(TextureImage14, vec2(U,V)).rgb;
-        // PREENCHA AQUI
         // Propriedades espectrais do plano
         //Kd = vec3(0.2,0.2,0.2);     //Refletância difusa no modelo RGB = (0.2, 0.2, 0.2)
         Ks = vec3(0.3,0.3,0.3);     //Refletância especular no modelo RGB = (0.3, 0.3, 0.3)
@@ -460,7 +378,6 @@ void main()
         V = texcoords.y;
 
         Kd = texture(TextureImage15, vec2(U,V)).rgb;
-        // PREENCHA AQUI
         // Propriedades espectrais do plano
         //Kd = vec3(0.2,0.2,0.2);     //Refletância difusa no modelo RGB = (0.2, 0.2, 0.2)
         Ks = vec3(0.3,0.3,0.3);     //Refletância especular no modelo RGB = (0.3, 0.3, 0.3)
@@ -475,7 +392,6 @@ void main()
         V = texcoords.y;
 
         Kd = texture(TextureImage16, vec2(U,V)).rgb;
-        // PREENCHA AQUI
         // Propriedades espectrais do plano
         //Kd = vec3(0.2,0.2,0.2);     //Refletância difusa no modelo RGB = (0.2, 0.2, 0.2)
         Ks = vec3(0.3,0.3,0.3);     //Refletância especular no modelo RGB = (0.3, 0.3, 0.3)
@@ -511,27 +427,6 @@ void main()
     // Termo especular Blinn-Phong
     vec3 blinn_phong_specular_term = Ks * I * pow(max(0.0,dot(n,h)), q);
 
-    // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
-    //vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
-    //vec3 Kd1 = texture(TextureImage1, vec2(U,V)).rgb;
-
-    // Equação de Iluminação
-    //float lambert = max(0,dot(n,l));
-
-    //color.rgb = Kd0 * (lambert );//+ Kd1 * (1.0 - pow(lambert,0.05));
-
-    // NOTE: Se você quiser fazer o rendering de objetos transparentes, é
-    // necessário:
-    // 1) Habilitar a operação de "blending" de OpenGL logo antes de realizar o
-    //    desenho dos objetos transparentes, com os comandos abaixo no código C++:
-    //      glEnable(GL_BLEND);
-    //      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // 2) Realizar o desenho de todos objetos transparentes *após* ter desenhado
-    //    todos os objetos opacos; e
-    // 3) Realizar o desenho de objetos transparentes ordenados de acordo com
-    //    suas distâncias para a câmera (desenhando primeiro objetos
-    //    transparentes que estão mais longe da câmera).
-    // Alpha default = 1 = 100% opaco = 0% transparente
     color.a = 1;
 
     color.rgb = lambert_diffuse_term + ambient_term + phong_specular_term;
