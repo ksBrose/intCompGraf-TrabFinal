@@ -16,6 +16,7 @@ uniform mat4 projection;
 #define PLANE  0
 #define WALL 1
 #define BONECO 2
+#define DOOR 3
 uniform int object_id;
 // Atributos de vértice que serão gerados como saída ("out") pelo Vertex Shader.
 // ** Estes serão interpolados pelo rasterizador! ** gerando, assim, valores
