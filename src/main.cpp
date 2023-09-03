@@ -1339,24 +1339,6 @@ void DrawVirtualObject(const char* object_name)
 //
 void LoadShadersFromFiles()
 {
-    // Note que o caminho para os arquivos "shader_vertex.glsl" e
-    // "shader_fragment.glsl" estão fixados, sendo que assumimos a existência
-    // da seguinte estrutura no sistema de arquivos:
-    //
-    //    + FCG_Lab_01/
-    //    |
-    //    +--+ bin/
-    //    |  |
-    //    |  +--+ Release/  (ou Debug/ ou Linux/)
-    //    |     |
-    //    |     o-- main.exe
-    //    |
-    //    +--+ src/
-    //       |
-    //       o-- shader_vertex.glsl
-    //       |
-    //       o-- shader_fragment.glsl
-    //
     GLuint vertex_shader_id = LoadShader_Vertex("../../src/shader_vertex.glsl");
     GLuint fragment_shader_id = LoadShader_Fragment("../../src/shader_fragment.glsl");
 
@@ -1490,15 +1472,6 @@ GLuint BuildTriangles()
 {
     // Primeiro, definimos os atributos de cada vértice.
 
-    // A posição de cada vértice é definida por coeficientes em um sistema de
-    // coordenadas local de cada modelo geométrico. Note o uso de coordenadas
-    // homogêneas.  Veja as seguintes referências:
-    //
-    //  - slides 35-48 do documento Aula_08_Sistemas_de_Coordenadas.pdf;
-    //  - slides 184-190 do documento Aula_08_Sistemas_de_Coordenadas.pdf;
-    //
-    // Este vetor "model_coefficients" define a GEOMETRIA (veja slides 103-110 do documento Aula_04_Modelagem_Geometrica_3D.pdf).
-    //
     GLfloat model_coefficients[] = {
     // Vértices de um cubo
     //    X      Y     Z     W
@@ -1576,9 +1549,6 @@ GLuint BuildTriangles()
     // um tipo de dado chamado de "vec4" em "shader_vertex.glsl": um vetor com
     // quatro coeficientes. Finalmente, informamos que os dados estão em ponto
     // flutuante com 32 bits (GL_FLOAT).
-    // Esta função também informa que o VBO "ligado" acima em glBindBuffer()
-    // está dentro do VAO "ligado" acima por glBindVertexArray().
-    // Veja https://www.khronos.org/opengl/wiki/Vertex_Specification#Vertex_Buffer_Object
     GLuint location = 0; // "(location = 0)" em "shader_vertex.glsl"
     GLint  number_of_dimensions = 4; // vec4 em "shader_vertex.glsl"
     glVertexAttribPointer(location, number_of_dimensions, GL_FLOAT, GL_FALSE, 0, 0);
@@ -1631,9 +1601,6 @@ GLuint BuildTriangles()
 
     // Vamos então definir polígonos utilizando os vértices do array
     // model_coefficients.
-    //
-    // Para referência sobre os modos de renderização, veja slides 182-188 do documento Aula_04_Modelagem_Geometrica_3D.pdf.
-    //
     // Este vetor "indices" define a TOPOLOGIA (veja slides 103-110 do documento Aula_04_Modelagem_Geometrica_3D.pdf).
     //
     GLuint indices[] = {
@@ -1824,9 +1791,6 @@ GLuint BuildTrianglesNeg()
     // um tipo de dado chamado de "vec4" em "shader_vertex.glsl": um vetor com
     // quatro coeficientes. Finalmente, informamos que os dados estão em ponto
     // flutuante com 32 bits (GL_FLOAT).
-    // Esta função também informa que o VBO "ligado" acima em glBindBuffer()
-    // está dentro do VAO "ligado" acima por glBindVertexArray().
-    // Veja https://www.khronos.org/opengl/wiki/Vertex_Specification#Vertex_Buffer_Object
     GLuint location = 0; // "(location = 0)" em "shader_vertex.glsl"
     GLint  number_of_dimensions = 4; // vec4 em "shader_vertex.glsl"
     glVertexAttribPointer(location, number_of_dimensions, GL_FLOAT, GL_FALSE, 0, 0);
@@ -1879,9 +1843,6 @@ GLuint BuildTrianglesNeg()
 
     // Vamos então definir polígonos utilizando os vértices do array
     // model_coefficients.
-    //
-    // Para referência sobre os modos de renderização, veja slides 182-188 do documento Aula_04_Modelagem_Geometrica_3D.pdf.
-    //
     // Este vetor "indices" define a TOPOLOGIA (veja slides 103-110 do documento Aula_04_Modelagem_Geometrica_3D.pdf).
     //
     GLuint indices[] = {
@@ -2357,9 +2318,6 @@ void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
     // altura), a qual será utilizada na definição das matrizes de projeção,
     // tal que não ocorra distorções durante o processo de "Screen Mapping"
     // acima, quando NDC é mapeado para coordenadas de pixels. Veja slides 205-215 do documento Aula_09_Projecoes.pdf.
-    //
-    // O cast para float é necessário pois números inteiros são arredondados ao
-    // serem divididos!
     g_ScreenRatio = (float)width / height;
 }
 
@@ -2438,10 +2396,6 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
         float dy = ypos - g_LastCursorPosY;
 
 /**free camera add**/
-    // Atualizamos parâmetros da câmera com os deslocamentos
-  //  g_CameraTheta -= 0.01f*dx;
-//    g_CameraPhi   += 0.01f*dy;
-
     g_Theta -= 0.003f*dx;
     g_Phi   += 0.003f*dy;
 /**free camera add**/
@@ -2480,14 +2434,6 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
 
     if (g_MiddleMouseButtonPressed)
     {
-        // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
-        //float dx = xpos - g_LastCursorPosX;
-        //float dy = ypos - g_LastCursorPosY;
-
-        // Atualizamos parâmetros da antebraço com os deslocamentos
-        //g_TorsoPositionX += 0.01f*dx;
-        //g_TorsoPositionY -= 0.01f*dy;
-
         // Atualizamos as variáveis globais para armazenar a posição atual do
         // cursor como sendo a última posição conhecida do cursor.
         g_LastCursorPosX = xpos;
@@ -2527,14 +2473,6 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     // Se o usuário pressionar a tecla ESC, fechamos a janela.
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
-
-    // O código abaixo implementa a seguinte lógica:
-    //   Se apertar tecla X       então g_AngleX += delta;
-    //   Se apertar tecla shift+X então g_AngleX -= delta;
-    //   Se apertar tecla Y       então g_AngleY += delta;
-    //   Se apertar tecla shift+Y então g_AngleY -= delta;
-    //   Se apertar tecla Z       então g_AngleZ += delta;
-    //   Se apertar tecla shift+Z então g_AngleZ -= delta;
 
     float delta = 3.141592 / 16; // 22.5 graus, em radianos.
 
@@ -2700,22 +2638,6 @@ void TextRendering_ShowBodyAngles(
         return;
 
     float pad = TextRendering_LineHeight(window);
-//Acentrox eixo central, Acentroy (comprmento)
-
-//abre/fecha,Rot In/Ex, Frente/tras
-//Aombrozd , Aombroyd, Aombroxd
-//Aombroze , Aombroye, Aombroxe
-
-//supi/pron, ext/flex
-//Acotovyd ,Acotovxe
-//Acotovyd ,Acotovxe
-
-//abre/fecha, rot ex/int, frent/tras
-//Aquadrildz, Aquadrildy, Aquadrildx
-//Aquadrilez, Aquadriley, Aquadrilex
-
-//estica/flex
-//Ajoelhox
 
 //yoko/inverso, rot ext/in,estica/flex,
 //Apedz, Apedy, Apedx
