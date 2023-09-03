@@ -13,7 +13,10 @@ layout (location = 3) in vec4 color_coefficients;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-
+#define PLANE  0
+#define WALL 1
+#define BONECO 2
+uniform int object_id;
 // Atributos de vértice que serão gerados como saída ("out") pelo Vertex Shader.
 // ** Estes serão interpolados pelo rasterizador! ** gerando, assim, valores
 // para cada fragmento, os quais serão recebidos como entrada pelo Fragment
@@ -76,20 +79,24 @@ void main()
     // Coordenadas de textura obtidas do arquivo OBJ (se existirem!)
     texcoords = texture_coefficients;
 
+    /*add*/
+    if(object_id == BONECO)
+    {
+        if ( render_as_black )
+        {
+            // Ignoramos o atributo cor dos vértices, colocando a cor final como
+            // preta. Utilizamos isto para renderizar as arestas pretas dos cubos.
+            cor_interpolada_pelo_rasterizador = vec4(0.0f,0.0f,0.0f,1.0f);
+        }
+        else
+        {
+            // Copiamos o atributo cor (de entrada) de cada vértice para a variável
+            // "cor_interpolada_pelo_rasterizador". Esta variável será interpolada pelo
+            // rasterizador, gerando valores interpolados para cada fragmento!  Veja o
+            // arquivo "shader_fragment.glsl".
+            cor_interpolada_pelo_rasterizador = color_coefficients;
+        }
+    }
 
-/*add*/if ( render_as_black )
-    {
-        // Ignoramos o atributo cor dos vértices, colocando a cor final como
-        // preta. Utilizamos isto para renderizar as arestas pretas dos cubos.
-        cor_interpolada_pelo_rasterizador = vec4(0.0f,0.0f,0.0f,1.0f);
-    }
-    else
-    {
-        // Copiamos o atributo cor (de entrada) de cada vértice para a variável
-        // "cor_interpolada_pelo_rasterizador". Esta variável será interpolada pelo
-        // rasterizador, gerando valores interpolados para cada fragmento!  Veja o
-        // arquivo "shader_fragment.glsl".
-        cor_interpolada_pelo_rasterizador = color_coefficients;
-    }
 }
 

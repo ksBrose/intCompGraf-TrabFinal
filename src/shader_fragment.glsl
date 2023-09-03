@@ -25,6 +25,7 @@ uniform mat4 projection;
 //#define BUNNY  1
 #define PLANE  0
 #define WALL 1
+#define BONECO 2
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -44,7 +45,7 @@ out vec4 color;
 // Constantes
 #define M_PI   3.14159265358979323846
 #define M_PI_2 1.57079632679489661923
-
+uniform bool render_as_black;
 void main()
 {
 /**/// Definimos a cor final de cada fragmento utilizando a cor interpolada
@@ -228,5 +229,10 @@ void main()
     // Cor final com correção gamma, considerando monitor sRGB.
     // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
     color.rgb = pow(color.rgb, vec3(1.0,1.0,1.0)/2.2);
+
+    if ( object_id == BONECO )
+    {
+     color = cor_interpolada_pelo_rasterizador;
+    }
 }
 
