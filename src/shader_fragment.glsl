@@ -27,6 +27,16 @@ uniform mat4 projection;
 #define WALL 1
 #define BONECO 2
 #define DOOR 3
+#define CHEST  4
+#define CUBE 5
+#define HEAD 6
+#define MAOPE 7
+#define TABLE 8
+#define BONSAI1 9
+#define BONSAI2 10
+#define BONSAI3 11
+#define BONSAI4 12
+
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -40,6 +50,18 @@ uniform sampler2D TextureImage2;
 uniform sampler2D TextureImage3;
 uniform sampler2D TextureImage4;
 uniform sampler2D TextureImage5;
+uniform sampler2D TextureImage6;
+uniform sampler2D TextureImage7;
+uniform sampler2D TextureImage8;
+uniform sampler2D TextureImage9;
+uniform sampler2D TextureImage10;
+uniform sampler2D TextureImage11;
+uniform sampler2D TextureImage12;
+uniform sampler2D TextureImage13;
+uniform sampler2D TextureImage14;
+uniform sampler2D TextureImage15;
+uniform sampler2D TextureImage16;
+
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec4 color;
@@ -164,7 +186,7 @@ void main()
         // Coordenadas de textura do plano, obtidas do arquivo OBJ.
         U = texcoords.x;
         V = texcoords.y;
-        Kd = texture(TextureImage4, vec2(U,V)).rgb;
+        Kd = texture(TextureImage1, vec2(U,V)).rgb;
         // PREENCHA AQUI
         // Propriedades espectrais do plano
         //Kd = vec3(0.2,0.2,0.2);     //Refletância difusa no modelo RGB = (0.2, 0.2, 0.2)
@@ -178,7 +200,281 @@ void main()
         // Coordenadas de textura do plano, obtidas do arquivo OBJ.
         U = texcoords.x;
         V = texcoords.y;
-        Kd = texture(TextureImage5, vec2(U,V)).rgb;
+        Kd = texture(TextureImage2, vec2(U,V)).rgb;
+        // PREENCHA AQUI
+        // Propriedades espectrais do plano
+        //Kd = vec3(0.2,0.2,0.2);     //Refletância difusa no modelo RGB = (0.2, 0.2, 0.2)
+        Ks = vec3(0.3,0.3,0.3);     //Refletância especular no modelo RGB = (0.3, 0.3, 0.3)
+        Ka = Kd/2;     //Refletância ambiente no modelo RGB = zero.
+        q = 20.0;                   //Expoente especular de Phong = 20.0
+
+    }
+    else if ( object_id == CHEST )
+    {
+        // PREENCHA AQUI as coordenadas de textura do coelho, computadas com
+        // projeção planar XY em COORDENADAS DO MODELO. Utilize como referência
+        // o slides 99-104 do documento Aula_20_Mapeamento_de_Texturas.pdf,
+        // e também use as variáveis min* /max* definidas abaixo para normalizar
+        // as coordenadas de textura U e V dentro do intervalo [0,1]. Para
+        // tanto, veja por exemplo o mapeamento da variável 'p_v' utilizando
+        // 'h' no slides 158-160 do documento Aula_20_Mapeamento_de_Texturas.pdf.
+        // Veja também a Questão 4 do Questionário 4 no Moodle.
+
+        float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        if( position_model.z == 0.5 )
+        {
+            U = (position_model.x-minx)/(maxx-minx);
+            V = (position_model.y-miny)/(maxy-miny);
+            Kd = texture(TextureImage3, vec2(U,V)).rgb;
+        }
+        if( position_model.z == -0.5 )
+        {
+            U = (position_model.x-maxx)/(minx-maxx);
+            V = (position_model.y-miny)/(maxy-miny);
+            Kd = texture(TextureImage4, vec2(U,V)).rgb;
+        }
+        if( position_model.x == -0.5 )
+        {
+            U = (position_model.z-maxz)/(minz-maxz);
+            V = (position_model.y-miny)/(maxy-miny);
+            Kd = texture(TextureImage5, vec2(U,V)).rgb;
+        }
+        if( position_model.x == 0.5 )
+        {
+            U = (position_model.z-maxz)/(minz-maxz);
+            V = (position_model.y-miny)/(maxy-miny);
+            Kd = texture(TextureImage5, vec2(U,V)).rgb;
+        }
+        if( position_model.y == 0 )
+        {
+            U = (position_model.x-minx)/(maxx-minx);
+            V = (position_model.y-miny)/(maxy-miny);
+            Kd = texture(TextureImage3, vec2(U,V)).rgb;
+        }
+        if( position_model.y == 1 )
+        {
+            U = (position_model.x-minx)/(maxx-minx);
+            V = (position_model.y-miny)/(maxy-miny);
+            Kd = texture(TextureImage3, vec2(U,V)).rgb;
+        }
+        //U = (position_model.z-minx)/(maxx-minx);
+        //V = (position_model.y-miny)/(maxy-miny);
+        //Kd = texture(TextureImage6, vec2(U,V)).rgb;
+        Ks = vec3(0.1,0.1,0.1);     //Refletância especular no modelo RGB = (0.8, 0.8, 0.8)
+        Ka = Kd/2;    //Refletância ambiente no modelo RGB = metade da refletância difusa
+        q = 32.0;                   //Expoente especular de Phong = 32.0
+
+    }
+        else if ( object_id == CUBE )
+    {
+        // PREENCHA AQUI as coordenadas de textura do coelho, computadas com
+        // projeção planar XY em COORDENADAS DO MODELO. Utilize como referência
+        // o slides 99-104 do documento Aula_20_Mapeamento_de_Texturas.pdf,
+        // e também use as variáveis min* /max* definidas abaixo para normalizar
+        // as coordenadas de textura U e V dentro do intervalo [0,1]. Para
+        // tanto, veja por exemplo o mapeamento da variável 'p_v' utilizando
+        // 'h' no slides 158-160 do documento Aula_20_Mapeamento_de_Texturas.pdf.
+        // Veja também a Questão 4 do Questionário 4 no Moodle.
+
+        float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        if( position_model.z == 0.5 )
+        {
+            U = (position_model.x-minx)/(maxx-minx);
+            V = (position_model.y-miny)/(maxy-miny);
+        }
+        if( position_model.z == -0.5 )
+        {
+            U = (position_model.x-maxx)/(minx-maxx);
+            V = (position_model.y-miny)/(maxy-miny);
+        }
+        if( position_model.x == -0.5 )
+        {
+            U = (position_model.z-maxz)/(minz-maxz);
+            V = (position_model.y-miny)/(maxy-miny);
+        }
+        if( position_model.x == 0.5 )
+        {
+            U = (position_model.z-maxz)/(minz-maxz);
+            V = (position_model.y-miny)/(maxy-miny);
+        }
+        if( position_model.y == 0 )
+        {
+            U = (position_model.x-minx)/(maxx-minx);
+            V = (position_model.y-miny)/(maxy-miny);
+        }
+        if( position_model.y == 1 )
+        {
+            U = (position_model.x-minx)/(maxx-minx);
+            V = (position_model.y-miny)/(maxy-miny);
+        }
+        //U = (position_model.z-minx)/(maxx-minx);
+        //V = (position_model.y-miny)/(maxy-miny);
+        Kd = texture(TextureImage6, vec2(U,V)).rgb;
+        Ks = vec3(0.1,0.1,0.1);     //Refletância especular no modelo RGB = (0.8, 0.8, 0.8)
+        Ka = Kd/2;    //Refletância ambiente no modelo RGB = metade da refletância difusa
+        q = 32.0;                   //Expoente especular de Phong = 32.0
+
+    }
+    else if ( object_id == HEAD )
+    {
+        // PREENCHA AQUI as coordenadas de textura do coelho, computadas com
+        // projeção planar XY em COORDENADAS DO MODELO. Utilize como referência
+        // o slides 99-104 do documento Aula_20_Mapeamento_de_Texturas.pdf,
+        // e também use as variáveis min* /max* definidas abaixo para normalizar
+        // as coordenadas de textura U e V dentro do intervalo [0,1]. Para
+        // tanto, veja por exemplo o mapeamento da variável 'p_v' utilizando
+        // 'h' no slides 158-160 do documento Aula_20_Mapeamento_de_Texturas.pdf.
+        // Veja também a Questão 4 do Questionário 4 no Moodle.
+
+        float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        if( position_model.z == 0.5 )
+        {
+            U = (position_model.x-minx)/(maxx-minx);
+            V = (position_model.y-miny)/(maxy-miny);
+            Kd = texture(TextureImage7, vec2(U,V)).rgb;
+        }
+        if( position_model.z == -0.5 )
+        {
+            U = (position_model.x-maxx)/(minx-maxx);
+            V = (position_model.y-miny)/(maxy-miny);
+            Kd = texture(TextureImage9, vec2(U,V)).rgb;
+        }
+        if( position_model.x == -0.5 )
+        {
+            U = (position_model.z-maxz)/(minz-maxz);
+            V = (position_model.y-miny)/(maxy-miny);
+            Kd = texture(TextureImage8, vec2(U,V)).rgb;
+        }
+        if( position_model.x == 0.5 )
+        {
+            U = (position_model.z-maxz)/(minz-maxz);
+            V = (position_model.y-miny)/(maxy-miny);
+            Kd = texture(TextureImage8, vec2(U,V)).rgb;
+        }
+        if( position_model.y == 0 )
+        {
+            U = (position_model.x-minx)/(maxx-minx);
+            V = (position_model.y-miny)/(maxy-miny);
+            Kd = texture(TextureImage7, vec2(U,V)).rgb;
+        }
+        if( position_model.y == 1 )
+        {
+            U = (position_model.x-minx)/(maxx-minx);
+            V = (position_model.z-minz)/(maxz-minz);
+            Kd = texture(TextureImage10, vec2(U,V)).rgb;
+        }
+        //U = (position_model.z-minx)/(maxx-minx);
+        //V = (position_model.y-miny)/(maxy-miny);
+        //Kd = texture(TextureImage6, vec2(U,V)).rgb;
+        Ks = vec3(0.1,0.1,0.1);     //Refletância especular no modelo RGB = (0.8, 0.8, 0.8)
+        Ka = Kd/2;    //Refletância ambiente no modelo RGB = metade da refletância difusa
+        q = 32.0;                   //Expoente especular de Phong = 32.0
+
+    }
+    else   if ( object_id == MAOPE )
+    {
+        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
+        U = texcoords.x;
+        V = texcoords.y;
+        Kd = texture(TextureImage11, vec2(U,V)).rgb;
+        // PREENCHA AQUI
+        // Propriedades espectrais do plano
+        //Kd = vec3(0.2,0.2,0.2);     //Refletância difusa no modelo RGB = (0.2, 0.2, 0.2)
+        Ks = vec3(0.3,0.3,0.3);     //Refletância especular no modelo RGB = (0.3, 0.3, 0.3)
+        Ka = Kd/2;     //Refletância ambiente no modelo RGB = zero.
+        q = 20.0;                   //Expoente especular de Phong = 20.0
+
+    }
+    else   if ( object_id == TABLE )
+    {
+        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
+        U = texcoords.x;
+        V = texcoords.y;
+        Kd = texture(TextureImage12, vec2(U,V)).rgb;
+        // PREENCHA AQUI
+        // Propriedades espectrais do plano
+        //Kd = vec3(0.2,0.2,0.2);     //Refletância difusa no modelo RGB = (0.2, 0.2, 0.2)
+        Ks = vec3(0.3,0.3,0.3);     //Refletância especular no modelo RGB = (0.3, 0.3, 0.3)
+        Ka = Kd/2;     //Refletância ambiente no modelo RGB = zero.
+        q = 20.0;                   //Expoente especular de Phong = 20.0
+
+    }
+    else   if ( object_id == BONSAI1 )
+    {
+        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
+        U = texcoords.x;
+        V = texcoords.y;
+
+        Kd = texture(TextureImage13, vec2(U,V)).rgb;
+        // PREENCHA AQUI
+        // Propriedades espectrais do plano
+        //Kd = vec3(0.2,0.2,0.2);     //Refletância difusa no modelo RGB = (0.2, 0.2, 0.2)
+        Ks = vec3(0.3,0.3,0.3);     //Refletância especular no modelo RGB = (0.3, 0.3, 0.3)
+        Ka = Kd/2;     //Refletância ambiente no modelo RGB = zero.
+        q = 20.0;                   //Expoente especular de Phong = 20.0
+
+    }
+    else   if ( object_id == BONSAI2 )
+    {
+        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
+        U = texcoords.x;
+        V = texcoords.y;
+
+        Kd = texture(TextureImage14, vec2(U,V)).rgb;
+        // PREENCHA AQUI
+        // Propriedades espectrais do plano
+        //Kd = vec3(0.2,0.2,0.2);     //Refletância difusa no modelo RGB = (0.2, 0.2, 0.2)
+        Ks = vec3(0.3,0.3,0.3);     //Refletância especular no modelo RGB = (0.3, 0.3, 0.3)
+        Ka = Kd/2;     //Refletância ambiente no modelo RGB = zero.
+        q = 20.0;                   //Expoente especular de Phong = 20.0
+
+    }
+    else   if ( object_id == BONSAI3 )
+    {
+        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
+        U = texcoords.x;
+        V = texcoords.y;
+
+        Kd = texture(TextureImage15, vec2(U,V)).rgb;
+        // PREENCHA AQUI
+        // Propriedades espectrais do plano
+        //Kd = vec3(0.2,0.2,0.2);     //Refletância difusa no modelo RGB = (0.2, 0.2, 0.2)
+        Ks = vec3(0.3,0.3,0.3);     //Refletância especular no modelo RGB = (0.3, 0.3, 0.3)
+        Ka = Kd/2;     //Refletância ambiente no modelo RGB = zero.
+        q = 20.0;                   //Expoente especular de Phong = 20.0
+
+    }
+        else   if ( object_id == BONSAI4 )
+    {
+        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
+        U = texcoords.x;
+        V = texcoords.y;
+
+        Kd = texture(TextureImage16, vec2(U,V)).rgb;
         // PREENCHA AQUI
         // Propriedades espectrais do plano
         //Kd = vec3(0.2,0.2,0.2);     //Refletância difusa no modelo RGB = (0.2, 0.2, 0.2)

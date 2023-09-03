@@ -270,6 +270,7 @@ float tetay =0;
 glm::vec3 bezier_cintura;
 /**Animação add**/
 bool camera_type = false;
+bool boneco_type = false;
 
 int main(int argc, char* argv[])
 {
@@ -362,12 +363,23 @@ int main(int argc, char* argv[])
 /**Boneco add**/
 
     // Carregamos duas imagens para serem utilizadas como textura
-    LoadTextureImage("../../data/wood_floor.jpg");      // TextureImage0
-    LoadTextureImage("../../data/wood_floor_specular.jpg");// TextureImage1
-    LoadTextureImage("../../data/wood_floor_ambient.jpg"); // TextureImage2
-    LoadTextureImage("../../data/wood_floor_normal.jpg"); // TextureImage3
-    LoadTextureImage("../../data/wood-wall-texture-3.jpg"); // TextureImage4
-    LoadTextureImage("../../data/Wooden_Door.jpg"); // TextureImage5
+    LoadTextureImage("../../data/laminate_floor_diff_4k.jpg");      // TextureImage0
+    LoadTextureImage("../../data/wood-wall-texture-3.jpg"); // TextureImage1
+    LoadTextureImage("../../data/Wooden_Door.jpg"); // TextureImage2
+    LoadTextureImage("../../data/peito.png"); // TextureImage3
+    LoadTextureImage("../../data/costas.png"); // TextureImage4
+    LoadTextureImage("../../data/lado.png"); // TextureImage5
+    LoadTextureImage("../../data/pano.png"); // TextureImage6
+    LoadTextureImage("../../data/face.png"); // TextureImage7
+    LoadTextureImage("../../data/side.png"); // TextureImage8
+    LoadTextureImage("../../data/back.png"); // TextureImage9
+    LoadTextureImage("../../data/up.png"); // TextureImage10
+    LoadTextureImage("../../data/skincolor.png"); // TextureImage11
+    LoadTextureImage("../../data/table.jpg"); // TextureImage12
+    LoadTextureImage("../../data/bark.jpg"); // TextureImage13
+    LoadTextureImage("../../data/branches.jpg"); // TextureImage14
+    LoadTextureImage("../../data/soil.jpg"); // TextureImage15
+    LoadTextureImage("../../data/default-grey.jpg"); // TextureImage16
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
 /*    ObjModel spheremodel("../../data/sphere.obj");
@@ -385,6 +397,18 @@ int main(int argc, char* argv[])
     ObjModel doormodel("../../data/door.obj");
     ComputeNormals(&doormodel);
     BuildTrianglesAndAddToVirtualScene(&doormodel);
+
+    ObjModel cubemodel("../../data/cube.obj");
+    ComputeNormals(&cubemodel);
+    BuildTrianglesAndAddToVirtualScene(&cubemodel);
+    //https://rigmodels.com/
+    ObjModel tablemodel("../../data/FPC6FO3EM6O76XDG4OEVVYGRS.obj");
+    ComputeNormals(&tablemodel);
+    BuildTrianglesAndAddToVirtualScene(&tablemodel);
+    //https://rigmodels.com/
+    ObjModel bonsaimodel("../../data/0RSKFKRRMENMWHZSCOTWWOLPS.obj");
+    ComputeNormals(&bonsaimodel);
+    BuildTrianglesAndAddToVirtualScene(&bonsaimodel);
 
     if ( argc > 1 )
     {
@@ -565,7 +589,17 @@ int main(int argc, char* argv[])
         #define PLANE  0
         #define WALL  1
         #define BONECO 2
-        #define DOOR 3
+        #define DOOR  3
+        #define CHEST  4
+        #define CUBE  5
+        #define HEAD 6
+        #define MAOPE 7
+        #define TABLE 8
+        #define BONSAI1 9
+        #define BONSAI2 10
+        #define BONSAI3 11
+        #define BONSAI4 12
+
         // ##### TAREFAS DO LABORATÓRIO 3
 
         // Cada cópia do cubo possui uma matriz de modelagem independente,
@@ -613,8 +647,14 @@ int main(int argc, char* argv[])
                         PushMatrix(model);                      // pilha = I * Tc * Rp * Rinclinacao
                             model = model * Matrix_Scale(0.8f, 1.0f, 0.2f); //escalamento do tronco
                             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                            glUniform1i(g_object_id_uniform, BONECO);
-                            DrawCube(render_as_black_uniform); // #### TRONCO // Desenhamos o tronco
+                            if(boneco_type){
+                                glUniform1i(g_object_id_uniform, CHEST);
+                                DrawVirtualObject("the_cube");
+                            }
+                            else if(!boneco_type){
+                                glUniform1i(g_object_id_uniform, BONECO);
+                                DrawCube(render_as_black_uniform); // #### TRONCO // Desenhamos o tronco
+                            }
                         PopMatrix(model);                       // pilha = I * Tc * Rp * Rinclinação
                 //PopMatrix(model);
             //PopMatrix(model);
@@ -635,12 +675,41 @@ int main(int argc, char* argv[])
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tc * Rp * Rcanimacao
                                         model = model * Matrix_Scale(0.4f, 0.4f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da cabeça
                                         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                        DrawCube(render_as_black_uniform); // #### CABEÇA // Desenhamos CABEÇA
+                                        if(boneco_type){
+                                            glUniform1i(g_object_id_uniform, HEAD);
+                                            DrawVirtualObject("the_cube");
+                                        }
+                                        else if(!boneco_type){
+                                            glUniform1i(g_object_id_uniform, BONECO);
+                                            DrawCube(render_as_black_uniform); // #### CABEÇA // Desenhamos CABEÇA
+                                        }
                                     PopMatrix(model);           // pilha = I * Tc * Rp * Ri * Tc * Rp * Rca
                                 PopMatrix(model);               // pilha = I * Tc * Rp * Ri * Tc * Rp
                             PopMatrix(model);                   // pilha = I * Tc * Rp * Ri * Tc
                         // Tiramos da pilha a matriz model guardada anteriormente
                         PopMatrix(model);                       // pilha = I * Tc * Rp * Ri
+
+                                        if(boneco_type){
+                /*R_arm*/PushMatrix(model);                     // pilha = I * Tc * Rp * Ri
+                            model = model * Matrix_Translate(-0.55f, 1.0f, 0.0f); // translação do braço direito
+                            PushMatrix(model);                  // pilha = I * Tc * Rp * Ri * Trightarm
+                                model = model // rotação braço (posicionamento)
+                                      * Matrix_Rotate_Z(M_PI);  // gira 90 graus baixos na linha do corpo
+                                      //* Matrix_Rotate_Y(g_AngleY)  // SEGUNDO rotação Y de Euler
+                                      //* Matrix_Rotate_X(M_PI); // PRIMEIRO rotação X de Euler
+                                PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Tra * Rrightarmposição
+                    /*ombro*/   model = model // rotação do braço direito (animação)
+                                      * Matrix_Rotate_Y((-angulo.ombrod.y)*M_PI/180)  // (-)supinaçao(palma cima) (+)pronação (palma chao)
+                                      * Matrix_Rotate_Z((-angulo.ombrod.z)*M_PI/180)  // (-)afasta cotovelo do corpo
+
+                                      * Matrix_Rotate_X((angulo.ombrod.x)*M_PI/180); // (+) cotovelo para traz (-) cotovelo para frente
+                                    PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rrightarmanimacao
+                                        model = model * Matrix_Scale(0.2f, 0.6f, 0.2f); // escalamento do braço direito
+                                        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
+                                            glUniform1i(g_object_id_uniform, CUBE);
+                                            DrawVirtualObject("the_cube");
+                                        }
+                                        else if(!boneco_type){
                         glBindVertexArray(vertex_array_object_id); //muda ponto de referencia de construção de cubos
                 /*R_arm*/PushMatrix(model);                     // pilha = I * Tc * Rp * Ri
                             model = model * Matrix_Translate(-0.55f, 1.0f, 0.0f); // translação do braço direito
@@ -658,20 +727,50 @@ int main(int argc, char* argv[])
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rrightarmanimacao
                                         model = model * Matrix_Scale(0.2f, 0.6f, 0.2f); // escalamento do braço direito
                                         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                        DrawCube(render_as_black_uniform); // #### BRAÇO DIREITO // Desenhamos o braço direito
+                                            glUniform1i(g_object_id_uniform, BONECO);
+                                            DrawCube(render_as_black_uniform);
+                                        } // #### BRAÇO DIREITO // Desenhamos o braço direito
                                     PopMatrix(model);           // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa
+                                            if(boneco_type){
+                                        model = model * Matrix_Translate(0.0f, 0.65f, 0.0f); // translação do antebraço direito
+                    /*rot cotovelo*/    model = model // rotação do ante braço direito (animação)
+                                            //* Matrix_Rotate_Y((-angulo.cotovd.y)*M_PI/180)  // SEGUNDO rotação Z de Euler
+                                            * Matrix_Rotate_Z((angulo.cotovd.z)*M_PI/180)
+                                            * Matrix_Rotate_X((-angulo.cotovd.x)*M_PI/180)* Matrix_Rotate_Y((-angulo.cotovd.y)*M_PI/180); // (-) fexao cotovelo até ( 0 ) esticado
+                                        PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rantebracodiranimacao
+                                            model = model * Matrix_Scale(0.17f, 0.55f, 0.2f); // escalamento do antebraço direito
+                                            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
+                                                glUniform1i(g_object_id_uniform, CUBE);
+                                                DrawVirtualObject("the_cube");
+                                            }
+                                            else if(!boneco_type){
                                         model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); // translação do antebraço direito
                     /*rot cotovelo*/    model = model // rotação do ante braço direito (animação)
                                             //* Matrix_Rotate_Y((-angulo.cotovd.y)*M_PI/180)  // SEGUNDO rotação Z de Euler
                                             * Matrix_Rotate_Z((angulo.cotovd.z)*M_PI/180)
-                                            * Matrix_Rotate_X((angulo.cotovd.x)*M_PI/180)* Matrix_Rotate_Y((-angulo.cotovd.y)*M_PI/180); // (-) fexao cotovelo até ( 0 ) esticado
+                                            * Matrix_Rotate_X((angulo.cotovd.x)*M_PI/180)* Matrix_Rotate_Y((angulo.cotovd.y)*M_PI/180); // (-) fexao cotovelo até ( 0 ) esticado
                                         PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rantebracodiranimacao
                                             model = model * Matrix_Scale(0.17f, 0.55f, 0.2f); // escalamento do antebraço direito
                                             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                            DrawCube(render_as_black_uniform); // #### ANTEBRAÇO DIREITO // Desenhamos o antebraço direito
+                                                glUniform1i(g_object_id_uniform, BONECO);
+                                                DrawCube(render_as_black_uniform);
+                                            } // #### ANTEBRAÇO DIREITO // Desenhamos o antebraço direito
                                         PopMatrix(model);       // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rabda
                                 /*Mão*/ PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rabda
+
+                                                if(boneco_type){
+                                            model = model * Matrix_Translate(0.0f, 0.6f, 0.0f); // translação da mao direita
+                                            //model = model // Atualizamos matriz model (multiplicação à direita) com a rotação da mao direita
+                                                // * Matrix_Rotate_Z(g_ForearmAngleZ)  // SEGUNDO rotação Z de Euler
+                                                // * Matrix_Rotate_X(g_ForearmAngleX); // PRIMEIRO rotação X de Euler
+                                            PushMatrix(model);  // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rabda * Tmaodireita
+                                                model = model * Matrix_Scale(0.12f, 0.2f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da mao direita
+                                                glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
+                                                    glUniform1i(g_object_id_uniform, MAOPE);
+                                                    DrawVirtualObject("the_cube");
+                                                }
+                                                else if(!boneco_type){
                                             model = model * Matrix_Translate(0.0f, -0.6f, 0.0f); // translação da mao direita
                                             //model = model // Atualizamos matriz model (multiplicação à direita) com a rotação da mao direita
                                                 // * Matrix_Rotate_Z(g_ForearmAngleZ)  // SEGUNDO rotação Z de Euler
@@ -679,7 +778,9 @@ int main(int argc, char* argv[])
                                             PushMatrix(model);  // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rabda * Tmaodireita
                                                 model = model * Matrix_Scale(0.12f, 0.2f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da mao direita
                                                 glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                                DrawCube(render_as_black_uniform); // #### MAO DIREITA // Desenhamos o mao direita
+                                                    glUniform1i(g_object_id_uniform, BONECO);
+                                                    DrawCube(render_as_black_uniform);
+                                                } // #### MAO DIREITA // Desenhamos o mao direita
                                             PopMatrix(model);   // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rabda * Tmd
                                         PopMatrix(model);       // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa * (Tabd)Rabda
                                     PopMatrix(model);           // pilha = I * Tc * Rp * Ri * Tra * Rrap * Rraa
@@ -690,6 +791,27 @@ int main(int argc, char* argv[])
                         // Neste ponto a matriz model recuperada é a matriz inicial (translação do torso)
                 /*L_arm*/
                         PushMatrix(model);                      // pilha = I * Tc * Rp * Ri
+
+                                        if(boneco_type){
+                            model = model * Matrix_Translate(0.55f, 1.0f, 0.0f); // translação para o braço esuerdo
+                            PushMatrix(model);                  // pilha = I * Tc * Rp * Ri * Tleftarm
+                                model = model // rotação braço (posicionamento)
+                                * Matrix_Rotate_Z(M_PI);  // gira 180 graus baixos na linha do corpo
+                                //* Matrix_Rotate_Y(g_AngleY)  // SEGUNDO rotação Y de Euler
+                                //* Matrix_Rotate_X(g_AngleX); // PRIMEIRO rotação X de Euler
+                                PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Tla * Rleftarmposição
+                    /*ombro*/   model = model // rotação do braço esquedro (animação)
+                                      * Matrix_Rotate_Y((angulo.ombroe.y)*M_PI/180)  // (+)supinaçao (-)pronação
+                                      * Matrix_Rotate_Z((angulo.ombroe.z)*M_PI/180) // (+)afasta cotovelo do corpo
+
+                                      * Matrix_Rotate_X((angulo.ombroe.x)*M_PI/180); // (+) cotovelo para traz (-) cotovelo para frente
+                                    PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rleftarmanimacao
+                                        model = model * Matrix_Scale(0.2f, 0.6f, 0.2f); // escalamento do braço esquerdo
+                                        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
+                                            glUniform1i(g_object_id_uniform, CUBE);
+                                            DrawVirtualObject("the_cube");
+                                        }
+                                        else if(!boneco_type){
                             model = model * Matrix_Translate(0.55f, 1.0f, 0.0f); // translação para o braço esuerdo
                             PushMatrix(model);                  // pilha = I * Tc * Rp * Ri * Tleftarm
                                 model = model // rotação braço (posicionamento)
@@ -705,9 +827,25 @@ int main(int argc, char* argv[])
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rleftarmanimacao
                                         model = model * Matrix_Scale(0.2f, 0.6f, 0.2f); // escalamento do braço esquerdo
                                         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                        DrawCube(render_as_black_uniform); // #### BRAÇO ESQUERDO // Desenhamos o braço esquerdo
+                                            glUniform1i(g_object_id_uniform, BONECO);
+                                            DrawCube(render_as_black_uniform);
+                                        } // #### BRAÇO ESQUERDO // Desenhamos o braço esquerdo
                                     PopMatrix(model);           // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa
+
+                                            if(boneco_type){
+                                        model = model * Matrix_Translate(0.0f, 0.65f, 0.0f); // translação do antebraço esquerdo
+                    /*rot cotovelo*/    model = model // rotação do antebraço esquerdo (animação)
+                                            //* Matrix_Rotate_Y((angulo.cotove.y)*M_PI/180)  // SEGUNDO rotação Z de Euler
+                                            * Matrix_Rotate_Z((angulo.cotove.z)*M_PI/180)
+                                            * Matrix_Rotate_X((-angulo.cotove.x)*M_PI/180)* Matrix_Rotate_Y((-angulo.cotove.y)*M_PI/180); // (-) fexao cotovelo até ( 0 ) esticado
+                                        PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa * (Tabe)Rantebracoesqanimacao
+                                            model = model * Matrix_Scale(0.17f, 0.55f, 0.2f); // escalamento do antebraço esquerdo
+                                            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
+                                                glUniform1i(g_object_id_uniform, CUBE);
+                                                DrawVirtualObject("the_cube");
+                                            }
+                                            else if(!boneco_type){
                                         model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); // translação do antebraço esquerdo
                     /*rot cotovelo*/    model = model // rotação do antebraço esquerdo (animação)
                                             //* Matrix_Rotate_Y((angulo.cotove.y)*M_PI/180)  // SEGUNDO rotação Z de Euler
@@ -716,9 +854,24 @@ int main(int argc, char* argv[])
                                         PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa * (Tabe)Rantebracoesqanimacao
                                             model = model * Matrix_Scale(0.17f, 0.55f, 0.2f); // escalamento do antebraço esquerdo
                                             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                            DrawCube(render_as_black_uniform); // #### ANTEBRAÇO ESQUERDO // Desenhamos o antebraço esquerdo
+                                                glUniform1i(g_object_id_uniform, BONECO);
+                                                DrawCube(render_as_black_uniform);
+                                            } // #### ANTEBRAÇO ESQUERDO // Desenhamos o antebraço esquerdo
                                         PopMatrix(model);       // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa * (Tabe)Rabea
                                 /*Mão*/ PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa * (Tabe)Rabea
+
+                                                if(boneco_type){
+                                            model = model * Matrix_Translate(0.0f, 0.6f, 0.0f); // translação da mao esquerda
+                                            //model = model // Atualizamos matriz model (multiplicação à direita) com a rotação da mao esquerda
+                                            // * Matrix_Rotate_Z(g_ForearmAngleZ)  // SEGUNDO rotação Z de Euler
+                                            // * Matrix_Rotate_X(g_ForearmAngleX); // PRIMEIRO rotação X de Euler
+                                            PushMatrix(model);  // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa * (Tabe)Rabea * Tmaoesquerda
+                                                model = model * Matrix_Scale(0.12f, 0.2f, 0.2f); // escalamento da mao esquerda
+                                                glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
+                                                    glUniform1i(g_object_id_uniform, MAOPE);
+                                                    DrawVirtualObject("the_cube");
+                                                }
+                                                else if(!boneco_type){
                                             model = model * Matrix_Translate(0.0f, -0.6f, 0.0f); // translação da mao esquerda
                                             //model = model // Atualizamos matriz model (multiplicação à direita) com a rotação da mao esquerda
                                             // * Matrix_Rotate_Z(g_ForearmAngleZ)  // SEGUNDO rotação Z de Euler
@@ -726,7 +879,9 @@ int main(int argc, char* argv[])
                                             PushMatrix(model);  // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa * (Tabe)Rabea * Tmaoesquerda
                                                 model = model * Matrix_Scale(0.12f, 0.2f, 0.2f); // escalamento da mao esquerda
                                                 glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                                DrawCube(render_as_black_uniform); // #### MAO ESQUERDA // Desenhamos a mao esquerda
+                                                    glUniform1i(g_object_id_uniform, BONECO);
+                                                    DrawCube(render_as_black_uniform);
+                                                } // #### MAO ESQUERDA // Desenhamos a mao esquerda
                                             PopMatrix(model);   // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa * (Tabe)Rabea * Tme
                                         PopMatrix(model);       // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa * (Tabe)Rabea
                                     PopMatrix(model);           // pilha = I * Tc * Rp * Ri * Tla * Rlap * Rlaa
@@ -737,6 +892,26 @@ int main(int argc, char* argv[])
                         // Neste ponto a matriz model recuperada é a matriz inicial (translação do torso)
                 /*Perna direita*/
                         PushMatrix(model);                      // pilha = I * Tc * Rp * Ri
+
+                                        if(boneco_type){
+                            model = model * Matrix_Translate(-0.2f, -0.05f, 0.0f); // translação para a perna direita
+                            PushMatrix(model);                  // pilha = I * Tc * Rp * Ri * Trightleg
+                                model = model // rotação da perna direita
+                                * Matrix_Rotate_Z(M_PI);  // gira 180 graus
+                                //* Matrix_Rotate_Y(g_AngleY)  // SEGUNDO rotação Y de Euler
+                                //* Matrix_Rotate_X(g_AngleX); // PRIMEIRO rotação X de Euler
+                                PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Trl * Rrightlegposição
+                                    model = model // rotação da perna direita
+                                        * Matrix_Rotate_Z((-angulo.quadrild.z)*M_PI/180)  // (-)afasta joelho do centro
+                                        * Matrix_Rotate_Y((angulo.quadrild.y)*M_PI/180)  // (-)rot externa (+)rot interna
+                                        * Matrix_Rotate_X((angulo.quadrild.x)*M_PI/180); // (+) joelho para traz (-) joelho para frente
+                                    PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrightleganimacao
+                                        model = model * Matrix_Scale(0.3f, 0.6f, 0.2f); // escalamento da perna direita
+                                        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
+                                            glUniform1i(g_object_id_uniform, CUBE);
+                                            DrawVirtualObject("the_cube");
+                                        }
+                                        else if(!boneco_type){
                             model = model * Matrix_Translate(-0.2f, -0.05f, 0.0f); // translação para a perna direita
                             PushMatrix(model);                  // pilha = I * Tc * Rp * Ri * Trightleg
                                 model = model // rotação da perna direita
@@ -751,9 +926,24 @@ int main(int argc, char* argv[])
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrightleganimacao
                                         model = model * Matrix_Scale(0.3f, 0.6f, 0.2f); // escalamento da perna direita
                                         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                        DrawCube(render_as_black_uniform); // #### PERNA DIREITA // Desenhamos a perna direita
+                                            glUniform1i(g_object_id_uniform, BONECO);
+                                            DrawCube(render_as_black_uniform);
+                                        } // #### PERNA DIREITA // Desenhamos a perna direita
                                     PopMatrix(model);           // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla
                                     PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla
+
+                                            if(boneco_type){
+                                        model = model * Matrix_Translate(0.0f, 0.65f, 0.0f); //translação para a perna direita
+                    /*rot joelho*/      model = model // rotação do perna direita (animação)
+                                            * Matrix_Rotate_Z(0)  // SEGUNDO rotação Z de Euler
+                                            * Matrix_Rotate_X((angulo.joelhod.x)*M_PI/180); // (+) fexao joelho até ( 0 ) esticado
+                                        PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla * Trl2
+                                            model = model * Matrix_Scale(0.25f, 0.6f, 0.2f); // escalamento da perna direita
+                                            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
+                                                glUniform1i(g_object_id_uniform, CUBE);
+                                                DrawVirtualObject("the_cube");
+                                            }
+                                            else if(!boneco_type){
                                         model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); //translação para a perna direita
                     /*rot joelho*/      model = model // rotação do perna direita (animação)
                                             * Matrix_Rotate_Z(0)  // SEGUNDO rotação Z de Euler
@@ -761,9 +951,26 @@ int main(int argc, char* argv[])
                                         PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla * Trl2
                                             model = model * Matrix_Scale(0.25f, 0.6f, 0.2f); // escalamento da perna direita
                                             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                            DrawCube(render_as_black_uniform); // #### PERNA DIREITA // Desenhamos a perna direita
+                                                glUniform1i(g_object_id_uniform, BONECO);
+                                                DrawCube(render_as_black_uniform);
+                                            } // #### PERNA DIREITA // Desenhamos a perna direita
                                         PopMatrix(model);       // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla * Trl2
                                 /*pé*/  PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla * Trl2
+
+                                                if(boneco_type){
+                                            model = model * Matrix_Translate(0.0f, 0.65f, 0.125f); // translação do pe direito
+                                            model = model // rotação do pe direito
+                                                    * Matrix_Rotate_Y((angulo.ped.y)*M_PI/180)  // (-)rot externa (+)rot interna
+                                                    * Matrix_Rotate_Z((-angulo.ped.z)*M_PI/180)  // (-)eversão do pé (+) inversão do pé(Yoko)
+
+                                                    * Matrix_Rotate_X((-angulo.ped.x)*M_PI/180); // (+) flexao planar(peito do pé) (-) dorsoflexão (0)= pe 90 graus
+                                            PushMatrix(model);  // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla * Trl2 * (Tpedireito)Rpedireitoanimação
+                                                model = model * Matrix_Scale(0.2f, 0.1f, 0.5f); // escalamento do pe direito
+                                                glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
+                                                    glUniform1i(g_object_id_uniform, MAOPE);
+                                                    DrawVirtualObject("the_cube");
+                                                }
+                                                else if(!boneco_type){
                                             model = model * Matrix_Translate(0.0f, -0.65f, 0.125f); // translação do pe direito
                                             model = model // rotação do pe direito
                                                     * Matrix_Rotate_Y((-angulo.ped.y)*M_PI/180)  // (-)rot externa (+)rot interna
@@ -773,7 +980,9 @@ int main(int argc, char* argv[])
                                             PushMatrix(model);  // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla * Trl2 * (Tpedireito)Rpedireitoanimação
                                                 model = model * Matrix_Scale(0.2f, 0.1f, 0.5f); // escalamento do pe direito
                                                 glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                                DrawCube(render_as_black_uniform); // #### PE DIREITO // Desenhamos o pe direito
+                                                    glUniform1i(g_object_id_uniform, BONECO);
+                                                    DrawCube(render_as_black_uniform);
+                                                } // #### PE DIREITO // Desenhamos o pe direito
                                             PopMatrix(model);   // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla * Trl2 * (Tpd)Rpda
                                         PopMatrix(model);       // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla * Trl2
                                     PopMatrix(model);           // pilha = I * Tc * Rp * Ri * Trl * Rrlp * Rrla
@@ -784,6 +993,26 @@ int main(int argc, char* argv[])
                         // Neste ponto a matriz model recuperada é a matriz inicial (translação do torso)
                 /*Perna esquerda*/
                         PushMatrix(model);                      // pilha = I * Tc * Rp * Ri
+
+                                        if(boneco_type){
+                            model = model * Matrix_Translate(0.2f, -0.05f, 0.0f); // translação para a perna esquerda
+                            PushMatrix(model);                  // pilha = I * Tc * Rp * Ri * Tleftleg
+                                model = model // rotação da perna esquerda
+                                    * Matrix_Rotate_Z(M_PI);  // gira 180 graus
+                                    //* Matrix_Rotate_Y(3.1415)  // SEGUNDO rotação Y de Euler
+                                    //* Matrix_Rotate_X(3.1415); // PRIMEIRO rotação X de Euler
+                                PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Tll * Rleftlegposição
+                                    model = model  // rotação da perna esquerda
+                                        * Matrix_Rotate_Z((angulo.quadrile.z)*M_PI/180)  // (+)afasta joelho do centro
+                                        * Matrix_Rotate_Y((-angulo.quadrile.y)*M_PI/180)  // (-)rot interna (+)rot externa
+                                        * Matrix_Rotate_X((angulo.quadrile.x)*M_PI/180); // (+) joelho para traz (-) joelho para frente
+                                    PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rleftleganimacao
+                                        model = model * Matrix_Scale(0.3f, 0.6f, 0.2f); // escalamento da perna esquerda
+                                        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
+                                            glUniform1i(g_object_id_uniform, CUBE);
+                                            DrawVirtualObject("the_cube");
+                                        }
+                                        else if(!boneco_type){
                             model = model * Matrix_Translate(0.2f, -0.05f, 0.0f); // translação para a perna esquerda
                             PushMatrix(model);                  // pilha = I * Tc * Rp * Ri * Tleftleg
                                 model = model // rotação da perna esquerda
@@ -798,9 +1027,24 @@ int main(int argc, char* argv[])
                                     PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rleftleganimacao
                                         model = model * Matrix_Scale(0.3f, 0.6f, 0.2f); // escalamento da perna esquerda
                                         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                        DrawCube(render_as_black_uniform); // #### PERNA ESQUERDA // Desenhamos a perna esquerda
+                                            glUniform1i(g_object_id_uniform, BONECO);
+                                            DrawCube(render_as_black_uniform);
+                                        } // #### PERNA ESQUERDA // Desenhamos a perna esquerda
                                     PopMatrix(model);               // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla
                                     PushMatrix(model);              // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla
+
+                                            if(boneco_type){
+                                        model = model * Matrix_Translate(0.0f, 0.65f, 0.0f); //translação para a perna esquerda
+                    /*rot joelho*/      model = model // rotação do perna esquerda (animação)
+                                            * Matrix_Rotate_Z(0)  // SEGUNDO rotação Z de Euler
+                                            * Matrix_Rotate_X((angulo.joelhoe.x)*M_PI/180); // (+) fexao joelho até ( 0 ) esticado
+                                        PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla * Tll2
+                                            model = model * Matrix_Scale(0.25f, 0.6f, 0.2f); // escalamento da perna esqurda
+                                            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
+                                                glUniform1i(g_object_id_uniform, CUBE);
+                                                DrawVirtualObject("the_cube");
+                                            }
+                                            else if(!boneco_type){
                                         model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); //translação para a perna esquerda
                     /*rot joelho*/      model = model // rotação do perna esquerda (animação)
                                             * Matrix_Rotate_Z(0)  // SEGUNDO rotação Z de Euler
@@ -808,9 +1052,26 @@ int main(int argc, char* argv[])
                                         PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla * Tll2
                                             model = model * Matrix_Scale(0.25f, 0.6f, 0.2f); // escalamento da perna esqurda
                                             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                            DrawCube(render_as_black_uniform); // #### PERNA ESQUERDA // Desenhamos a perna esquerda
+                                                glUniform1i(g_object_id_uniform, BONECO);
+                                                DrawCube(render_as_black_uniform);
+                                            } // #### PERNA ESQUERDA // Desenhamos a perna esquerda
                                         PopMatrix(model);           // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla * Tll2
                                 /*pé*/  PushMatrix(model);          // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla * Tll2
+
+                                                if(boneco_type){
+                                            model = model * Matrix_Translate(0.0f, 0.65f, 0.125f); // translação do pe esquerdo
+                                            model = model // rotação do pe esquerdo
+                                                    * Matrix_Rotate_Y((-angulo.pee.y)*M_PI/180)  // (-)rot interna (+)rot externa
+                                                    * Matrix_Rotate_Z((angulo.pee.z)*M_PI/180)  // (-)inversão do pé(Yoko) (+) eversão do pé
+
+                                                    * Matrix_Rotate_X((-angulo.pee.x)*M_PI/180); // (+) flexao planar(peito do pé) (-) dorsoflexão (0)= pe 90 graus
+                                            PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla * Tll2 * (Tpeesquerdo)Rpeesquerdoanimação
+                                                model = model * Matrix_Scale(0.2f, 0.1f, 0.5f); // escalamento do pe esquerdo
+                                                glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
+                                                    glUniform1i(g_object_id_uniform, MAOPE);
+                                                    DrawVirtualObject("the_cube");
+                                                }
+                                                else if(!boneco_type){
                                             model = model * Matrix_Translate(0.0f, -0.65f, 0.125f); // translação do pe esquerdo
                                             model = model // rotação do pe esquerdo
                                                     * Matrix_Rotate_Y((angulo.pee.y)*M_PI/180)  // (-)rot interna (+)rot externa
@@ -820,7 +1081,9 @@ int main(int argc, char* argv[])
                                             PushMatrix(model);      // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla * Tll2 * (Tpeesquerdo)Rpeesquerdoanimação
                                                 model = model * Matrix_Scale(0.2f, 0.1f, 0.5f); // escalamento do pe esquerdo
                                                 glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model)); // Enviamos matriz model atual para a GPU
-                                                DrawCube(render_as_black_uniform); // #### PE ESQUERDO // Desenhamos o pe esquerdo
+                                                    glUniform1i(g_object_id_uniform, BONECO);
+                                                    DrawCube(render_as_black_uniform);
+                                                } // #### PE ESQUERDO // Desenhamos o pe esquerdo
                                             PopMatrix(model);       // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla * Tll2 * (Tpe)Rpea
                                         PopMatrix(model);           // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla * Tll2
                                     PopMatrix(model);               // pilha = I * Tc * Rp * Ri * Tll * Rllp * Rlla
@@ -887,6 +1150,8 @@ int main(int argc, char* argv[])
         #define WALL  1
         #define BONECO 2
         #define DOOR 3
+        #define CHEST  4
+        #define CUBE  4
 /*
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(-1.0f,0.0f,0.0f)
@@ -969,6 +1234,27 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, DOOR);
         DrawVirtualObject("the_plane");
+
+        // Desenhamos o modelo da mesa
+        model = Matrix_Translate(-4.5f,0.4f,0.0f)
+                * Matrix_Rotate_Y(M_PI_2);;
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, TABLE);
+        DrawVirtualObject("Object_TexMap_0");
+
+        // Desenhamos o modelo do bonsai
+        model = Matrix_Translate(-4.5f,1.15f,0.0f)
+                * Matrix_Scale(0.3f, 0.3f, 0.3f)
+                * Matrix_Rotate_Y(M_PI_2);;
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, BONSAI1);
+        DrawVirtualObject("Object_bark.jpg");
+        glUniform1i(g_object_id_uniform, BONSAI2);
+        DrawVirtualObject("Object_branches.jpg");
+        glUniform1i(g_object_id_uniform, BONSAI3);
+        DrawVirtualObject("Object_soil.jpg");
+        glUniform1i(g_object_id_uniform, BONSAI4);
+        DrawVirtualObject("Object_color_0.072670-0.054059-0.049911.jpg");
 
         TextRendering_ShowBodyAngles(window,angulo);
         // Imprimimos na tela os ângulos de Euler que controlam a rotação do
@@ -1164,7 +1450,17 @@ void LoadShadersFromFiles()
     glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage3"), 3);
     glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage4"), 4);
     glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage5"), 5);
-
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage6"), 6);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage7"), 7);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage8"), 8);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage9"), 9);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage10"), 10);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage11"), 11);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage12"), 12);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage13"), 13);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage14"), 14);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage15"), 15);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage16"), 16);
 
 
     glUseProgram(0);
@@ -2336,6 +2632,10 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
     {
         camera_type= !camera_type;
+    }
+    if (key == GLFW_KEY_B && action == GLFW_PRESS)
+    {
+        boneco_type= !boneco_type;
     }
     // Se o usuário apertar a tecla espaço, resetamos os ângulos de Euler para zero.
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
