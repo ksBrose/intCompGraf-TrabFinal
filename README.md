@@ -80,3 +80,6 @@ Boneco base (sem textura) e parado, Camera Perspectiva e Câmera Livre
 
 Boneco com Textura em movimento, Camera Perspectiva e Câmera Fixa
 ![image](https://github.com/ksBrose/intCompGraf-TrabFinal/assets/104263191/2f76f643-666a-4471-ad45-918c307a2f93)
+
+# Link do vídeo
+https://www.youtube.com/watch?v=CDoh5HsyDno
