@@ -14,20 +14,23 @@ A arte da animação tem desempenhado um papel fundamental na indústria do entr
 (Kelvin)
 Animação, Movimentação por curva de Bezier, Mapeamento de textura e iluminação no boneco, Inserção de objetos da mesa e bonsai e implementação da camera.
 
+(Gustavo)
+Animação, Mapeamentos de textura e iluminação das Paredes e do Teto e Inserção de objeto da Porta.
+
 # Implementação
 O github e o IDE Code BLocks foram as ferramentas utilizadas para o desenvolvimento do trabalho. Utilizando as linguagens C e C++.
 Ambos os integrantes da dupla tiveram participação no desenvolvimente de código do trabalho.
 
-* Malhas Poligonais complexas                         -  OK (Kelvin)
-* Transformações geométricas controladas pelo usuário -  OK (Gustavo/Kelvin)
-* Câmera livre e câmera look-at                       -  OK (Gustavo/Kelvin)      
-* Instâncias de objetos                               -  OK (Gustavo/Kelvin)
+* Malhas Poligonais complexas                         -  OK 
+* Transformações geométricas controladas pelo usuário -  OK 
+* Câmera livre e câmera look-at                       -  OK       
+* Instâncias de objetos                               -  OK 
 * Três tipos de testes de intersecção                 -
-* Modelos de Iluminação Difusa e Blinn-Phong          -  OK (Gustavo/Kelvin)
+* Modelos de Iluminação Difusa e Blinn-Phong          -  OK 
 * Modelos de Interpolação de Phong e Gouraud          -
-* Mapeamento de texturas em todos os objetos          -  OK (Gustavo/Kelvin)
-* Movimentação com curva Bézier cúbica                -  OK (Kelvin)
-* Animações baseadas no tempo ($\Delta t$)            -  OK (Gustavo/Kelvin)
+* Mapeamento de texturas em todos os objetos          -  OK 
+* Movimentação com curva Bézier cúbica                -  OK 
+* Animações baseadas no tempo ($\Delta t$)            -  OK 
 
 # Desenvolvimento
 Para o desenvolvimento do trabalho se utilizou o codigo fonte dos laboratorios da disciplina, principalmente o laboratório 3 e 5.
