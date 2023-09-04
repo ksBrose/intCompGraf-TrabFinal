@@ -38,17 +38,21 @@ de cada membro em relação ao membro anterior. para movimentos simples e linear
 
 Controle da camera:
 Apertando a tecla "C" se altera o tipo de camera, Camera livre e Camera Look-at(olhar fixo no centro da sala)
+
 Camera Livre:
 Para movimentar a camera se utiliza as teclas WASD (movimentação para frente, esquerda, traz, e direita)
 Com o botão esquerdo do mouse pressionado na janela e a movimentação do mesmo mudarão a direção da camera (olhar para esquerda, direita, cima e embaixo) 
 Combinando os dois trea uma movimentação completa da camera.
+
 Camera Look-at:
 Para movimentar a camera botão esquerdo do mouse deve ser pressionado na janela e a movimentação do mesmo mudarão a direção da camera.
 Para alterar a distancia do centro da sala utiliza a roda do mouse (scroll wheel)
 
+
 Tipo de geometria:
 Apertando a tecla "O": mudar a geometria para uma projeção ortográfica.
 Apertando a tecla "P": mudar a geometria para uma projeção perspectiva.
+
 
 Controle da animação:
 É possivel controlar a animação utilizando as seguintes teclas:
@@ -56,6 +60,7 @@ Tecla "K": inicia/para a animação.
 Tecla "ESPAÇO": reseta a posição do boneco para o ponto inicial e reseta o tempo.
 Tecla "seta para esquerda": recua o tempo em 3 segundos.
 Tecla "seta para direita": avança o tempo em 3 segundos.
+
 
 Teclas extras:
 Tecla "B": Muda a textura do Boneco.
