@@ -14,13 +14,50 @@ A arte da animação tem desempenhado um papel fundamental na indústria do entr
 O github e o IDE Code BLocks foram as ferramentas utilizadas para o desenvolvimento do trabalho. Utilizando as linguagens C e C++.
 Ambos os integrantes da dupla tiveram participação no desenvolvimente de código do trabalho.
 
-* Malhas Poligonais complexas                         -
-* Transformações geométricas controladas pelo usuário -
-* Câmera livre e câmera look-at                       -                  
-* Instâncias de objetos                               -
+* Malhas Poligonais complexas                         -  OK
+* Transformações geométricas controladas pelo usuário -  OK
+* Câmera livre e câmera look-at                       -  OK         
+* Instâncias de objetos                               -  OK
 * Três tipos de testes de intersecção                 -
-* Modelos de Iluminação Difusa e Blinn-Phong          -
+* Modelos de Iluminação Difusa e Blinn-Phong          -  OK
 * Modelos de Interpolação de Phong e Gouraud          -
-* Mapeamento de texturas em todos os objetos          -
-* Movimentação com curva Bézier cúbica                -
-* Animações baseadas no tempo ($\Delta t$)            -
+* Mapeamento de texturas em todos os objetos          -  OK
+* Movimentação com curva Bézier cúbica                -  OK
+* Animações baseadas no tempo ($\Delta t$)            -  OK
+
+# Desenvolvimento
+Para o desenvolvimento do trabalho seutilizou o codigo fonte dos laboratorios da disciplina, principalmente o laboratório 3 e 5.
+O laboratorio 3 tinha o foco na implementação de transformaçoes geometricas hierarquicas, fundamental para criação do boneco utilizado na animação.
+E o laboratorio 5 que tinha o foco na implementação de texturas nos objetos no codigo.
+
+Se utilizou curva de Bézier para movimentação do personagem, foram utilizadas curvas de grau 1,2 e 3. As curvas foram utilizadas para o deslocamento do boneco e
+para a movimentação dos membros, para o deslocamento se utilizou seu ponto no espaço (xyz) e a movimentação dos membros se utilizou os angulos do ponto de origem
+de cada membro em relação ao membro anterior. para movimentos simples e lineares utilizou curva Bézier de grau 1, e curva Bézier cúbica para movimentos mais complexos.
+
+# Manual de uso e teclas de atalhos
+
+Controle da camera:
+Apertando a tecla "C" se altera o tipo de camera, Camera livre e Camera Look-at(olhar fixo no centro da sala)
+Camera Livre:
+Para movimentar a camera se utiliza as teclas WASD (movimentação para frente, esquerda, traz, e direita)
+Com o botão esquerdo do mouse pressionado na janela e a movimentação do mesmo mudarão a direção da camera (olhar para esquerda, direita, cima e embaixo) 
+Combinando os dois trea uma movimentação completa da camera.
+Camera Look-at:
+Para movimentar a camera botão esquerdo do mouse deve ser pressionado na janela e a movimentação do mesmo mudarão a direção da camera.
+Para alterar a distancia do centro da sala utiliza a roda do mouse (scroll wheel)
+
+Tipo de geometria:
+Apertando a tecla "O": mudar a geometria para uma projeção ortográfica.
+Apertando a tecla "P": mudar a geometria para uma projeção perspectiva.
+
+Controle da animação:
+É possivel controlar a animação utilizando as seguintes teclas:
+Tecla "K": inicia/para a animação.
+Tecla "ESPAÇO": reseta a posição do boneco para o ponto inicial e reseta o tempo.
+Tecla "seta para esquerda": recua o tempo em 3 segundos.
+Tecla "seta para direita": avança o tempo em 3 segundos.
+
+Teclas extras:
+Tecla "B": Muda a textura do Boneco.
+Tecla "H": Esconde/Mostra informações na tela.
+Tecla "ESC": Fecha a janela.
