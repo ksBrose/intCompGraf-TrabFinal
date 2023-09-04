@@ -37,9 +37,9 @@ Para o desenvolvimento do trabalho se utilizou o codigo fonte dos laboratorios d
 O laboratorio 3 tinha o foco na implementação de transformaçoes geometricas hierarquicas, fundamental para criação do boneco utilizado na animação.
 E o laboratorio 5 que tinha o foco na implementação de texturas nos objetos no codigo.
 
-Se utilizou curva de Bézier para movimentação do personagem, foram utilizadas curvas de grau 1,2 e 3. As curvas foram utilizadas para o deslocamento do boneco e
-para a movimentação dos membros, para o deslocamento se utilizou seu ponto no espaço (xyz) e a movimentação dos membros se utilizou os angulos do ponto de origem
-de cada membro em relação ao membro anterior. para movimentos simples e lineares utilizou curva Bézier de grau 1, e curva Bézier cúbica para movimentos mais complexos.
+Se utilizou curva de Bézier para movimentação do personagem, foram utilizadas curvas de grau 1,2 e 3. As curvas foram utilizadas para o deslocamento do boneco e para a movimentação dos membros, para o deslocamento se utilizou seu ponto no espaço (xyz) e a movimentação dos membros se utilizou os angulos do ponto de origem de cada membro em relação ao membro anterior. Para movimentos simples e lineares utilizou curva Bézier de grau 1, e curva Bézier cúbica para movimentos mais complexos.
+
+Para o mapeamento das texturas, foi utilizado o site polyhaven.com/textures para a retirada das texturas utilizadas. Já os objetos utilizados na cena foram retirados do site rigmodels.com.
 
 # Manual de uso e teclas de atalhos
 
