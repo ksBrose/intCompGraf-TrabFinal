@@ -73,3 +73,7 @@ Teclas extras:
 Tecla "B": Muda a textura do Boneco.
 Tecla "H": Esconde/Mostra informações na tela.
 Tecla "ESC": Fecha a janela.
+
+# Imagens 
+![image](https://github.com/ksBrose/intCompGraf-TrabFinal/assets/104263191/1645296a-81e3-47c6-9620-513af53a42da)
+
