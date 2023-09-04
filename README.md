@@ -18,19 +18,19 @@ Animação, Movimentação por curva de Bezier, Mapeamento de textura e ilumina�
 O github e o IDE Code BLocks foram as ferramentas utilizadas para o desenvolvimento do trabalho. Utilizando as linguagens C e C++.
 Ambos os integrantes da dupla tiveram participação no desenvolvimente de código do trabalho.
 
-* Malhas Poligonais complexas                         -  OK
-* Transformações geométricas controladas pelo usuário -  OK
-* Câmera livre e câmera look-at                       -  OK         
-* Instâncias de objetos                               -  OK
+* Malhas Poligonais complexas                         -  OK (Kelvin)
+* Transformações geométricas controladas pelo usuário -  OK (Gustavo/Kelvin)
+* Câmera livre e câmera look-at                       -  OK (Gustavo/Kelvin)      
+* Instâncias de objetos                               -  OK (Gustavo/Kelvin)
 * Três tipos de testes de intersecção                 -
-* Modelos de Iluminação Difusa e Blinn-Phong          -  OK
+* Modelos de Iluminação Difusa e Blinn-Phong          -  OK (Gustavo/Kelvin)
 * Modelos de Interpolação de Phong e Gouraud          -
-* Mapeamento de texturas em todos os objetos          -  OK
-* Movimentação com curva Bézier cúbica                -  OK
-* Animações baseadas no tempo ($\Delta t$)            -  OK
+* Mapeamento de texturas em todos os objetos          -  OK (Gustavo/Kelvin)
+* Movimentação com curva Bézier cúbica                -  OK (Kelvin)
+* Animações baseadas no tempo ($\Delta t$)            -  OK (Gustavo/Kelvin)
 
 # Desenvolvimento
-Para o desenvolvimento do trabalho seutilizou o codigo fonte dos laboratorios da disciplina, principalmente o laboratório 3 e 5.
+Para o desenvolvimento do trabalho se utilizou o codigo fonte dos laboratorios da disciplina, principalmente o laboratório 3 e 5.
 O laboratorio 3 tinha o foco na implementação de transformaçoes geometricas hierarquicas, fundamental para criação do boneco utilizado na animação.
 E o laboratorio 5 que tinha o foco na implementação de texturas nos objetos no codigo.
 
